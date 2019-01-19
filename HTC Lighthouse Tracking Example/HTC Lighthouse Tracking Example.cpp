@@ -65,7 +65,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	printSoftwareVersion();
 
 	// If false we'll parse tracking data continously, if true we parse when an openvr event fires
-	bool bAcquireTrackingDataByWaitingForVREvents = true;
+	bool bAcquireTrackingDataByWaitingForVREvents = false;
+	// Hack to override the command line arg
+	showOnlyDevice = 2;
 
 	// Create a new LighthouseTracking instance and parse as needed
 	LighthouseTracking *lighthouseTracking = new LighthouseTracking();
@@ -81,6 +83,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			printf_s(buf);
 			Sleep(2000);
 
+			// This is our main loop run
 			while (lighthouseTracking->RunProcedure(bAcquireTrackingDataByWaitingForVREvents, showOnlyDevice)) {
 
 				// Windows quit routine - adapt as you need
@@ -96,6 +99,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					}
 					else if ('l' == ch) {
 						lighthouseTracking->PrintDevices();
+
 					}
 				}
 
