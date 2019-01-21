@@ -380,64 +380,6 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 
 		switch (trackedDeviceClass) {
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
-			// print stuff for the HMD here, see controller stuff in next case block
-
-			// get pose relative to the safe bounds defined by the user
-			vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, devicePose, 1);
-
-			// get the position and rotation
-			position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
-			quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);
-
-			// get some data
-			vVel = devicePose->vVelocity;
-			vAngVel = devicePose->vAngularVelocity;
-			eTrackingResult = devicePose->eTrackingResult;
-			bPoseValid = devicePose->bPoseIsValid;
-
-			// print the tracking data
-			char buf[1024];
-			sprintf_s(buf, sizeof(buf), "\nHMD\nx: %.2f y: %.2f z: %.2f\n", position.v[0], position.v[1], position.v[2]);
-			printf_s(buf);
-			sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
-			printf_s(buf);
-
-			// and print some more info to the user about the state of the device/pose
-			switch (eTrackingResult) {
-			case vr::ETrackingResult::TrackingResult_Uninitialized:
-				sprintf_s(buf, sizeof(buf), "Invalid tracking result\n");
-				printf_s(buf);
-				break;
-			case vr::ETrackingResult::TrackingResult_Calibrating_InProgress:
-				sprintf_s(buf, sizeof(buf), "Calibrating in progress\n");
-				printf_s(buf);
-				break;
-			case vr::ETrackingResult::TrackingResult_Calibrating_OutOfRange:
-				sprintf_s(buf, sizeof(buf), "Calibrating Out of range\n");
-				printf_s(buf);
-				break;
-			case vr::ETrackingResult::TrackingResult_Running_OK:
-				sprintf_s(buf, sizeof(buf), "Running OK!\n");
-				printf_s(buf);
-				break;
-			case vr::ETrackingResult::TrackingResult_Running_OutOfRange:
-				sprintf_s(buf, sizeof(buf), "WARNING: Running Out of Range\n");
-				printf_s(buf);
-
-				break;
-			default:
-				sprintf_s(buf, sizeof(buf), "Default\n");
-				printf_s(buf);
-				break;
-			}
-
-			// print if the pose is valid or not
-			if (bPoseValid)
-				sprintf_s(buf, sizeof(buf), "Valid pose\n");
-			else
-				sprintf_s(buf, sizeof(buf), "Invalid pose\n");
-			printf_s(buf);
-
 			break;
 
 
@@ -445,7 +387,8 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			// Simliar to the HMD case block above, please adapt as you like
 			// to get away with code duplication and general confusion
 
-			bool success = vr::VRSystem()->GetControllerStateWithPose(vr::TrackingUniverseStanding, unDevice, &controllerState, sizeof(controllerState), devicePose);
+			char buf[1024];
+			bool success = vr::VRSystem()->GetControllerStateWithPose(vr::TrackingUniverseStanding, unDevice, &controllerState, 1, devicePose);
 			role = vr::VRSystem()->GetControllerRoleForTrackedDeviceIndex(unDevice);
 
 			position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
@@ -458,48 +401,41 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 
 			switch (eTrackingResult) {
 			case vr::ETrackingResult::TrackingResult_Uninitialized:
-				sprintf_s(buf, sizeof(buf), "\rInvalid tracking result  \t");
+				sprintf_s(buf, sizeof(buf), "\rInvalid tracking result  \n");
 				printf_s(buf);
 				fflush(stdout);
 				break;
 			case vr::ETrackingResult::TrackingResult_Calibrating_InProgress:
-				sprintf_s(buf, sizeof(buf), "\rCalibrating in progress  \t");
+				sprintf_s(buf, sizeof(buf), "\rCalibrating in progress  \n");
 				printf_s(buf);
 				fflush(stdout);
 				break;
 			case vr::ETrackingResult::TrackingResult_Calibrating_OutOfRange:
-				sprintf_s(buf, sizeof(buf), "\rCalibrating Out of range \t");
+				sprintf_s(buf, sizeof(buf), "\rCalibrating Out of range \n");
 				printf_s(buf);
 				fflush(stdout);
 				break;
 			case vr::ETrackingResult::TrackingResult_Running_OK:
 				break;
 			case vr::ETrackingResult::TrackingResult_Running_OutOfRange:
-				sprintf_s(buf, sizeof(buf), "\rWARNING: Running Out of Range ");
+				sprintf_s(buf, sizeof(buf), "\rWARNING: Running Out of Range \n");
 				printf_s(buf);
 				fflush(stdout);
 				break;
 			default:
-				sprintf_s(buf, sizeof(buf), "\rUnknown Tracking Result ");
+				sprintf_s(buf, sizeof(buf), "\rUnknown Tracking Result \n");
 				printf_s(buf);
 				fflush(stdout);
 				break;
 			}
 
-			if (!bPoseValid) {
-				sprintf_s(buf, sizeof(buf), " - Invalid pose");
-				printf_s(buf);
-				fflush(stdout);
-			}
-
 			if (!success) {
-				sprintf_s(buf, sizeof(buf), " - failed to get controller state (w/ pose)");
+				sprintf_s(buf, sizeof(buf), " - failed to get controller state (w/ pose)\n");
 				printf_s(buf);
 				fflush(stdout);
 			}
 
 			if (!bPoseValid || eTrackingResult != vr::ETrackingResult::TrackingResult_Running_OK) {
-				printf("\n");
 				continue;
 			}
 
@@ -515,7 +451,7 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 				if (role == vr::TrackedControllerRole_RightHand) hand = 'R';
 				else if (role == vr::TrackedControllerRole_LeftHand) hand = 'L';
 
-				sprintf_s(buf, sizeof(buf), "\r%c Controller unDevice: %d index: %d\tx: %.2f y: %.2f z: %.2f",
+				sprintf_s(buf, sizeof(buf), "\r%c Controller unDevice: %d deviceIndex: %d\tx: %.2f y: %.2f z: %.2f\n",
 					hand,
 					unDevice,
 					vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(role),
@@ -537,9 +473,9 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 				break;
 			}
 			break;
-		} // tracked device class
-		case vr::TrackedDeviceClass_GenericTracker:
-			//char buf[1024];
+		} // tracked device class controller
+		case vr::TrackedDeviceClass_GenericTracker: {
+			char buf[1024];
 
 			if (!vr::VRSystem()->GetControllerStateWithPose(
 				vr::TrackingUniverseStanding,
@@ -568,13 +504,14 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			fflush(stdout);
 
 			break;
-
-		case vr::TrackedDeviceClass_TrackingReference:
+		} // generic tracker
+		case vr::TrackedDeviceClass_TrackingReference: {
 			// incomplete code, only here for switch reference
+			char buf[1024];
 			sprintf_s(buf, sizeof(buf), "Camera / Base Station");
 			printf_s(buf);
 			break;
-
+		}
 
 		default: {
 			char buf[1024];

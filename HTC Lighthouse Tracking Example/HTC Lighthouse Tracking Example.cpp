@@ -67,7 +67,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	// If false we'll parse tracking data continously, if true we parse when an openvr event fires
 	bool bAcquireTrackingDataByWaitingForVREvents = false;
 	// Hack to override the command line arg
-	showOnlyDevice = 2;
+	showOnlyDevice = 3;
 
 	// Create a new LighthouseTracking instance and parse as needed
 	LighthouseTracking *lighthouseTracking = new LighthouseTracking();
