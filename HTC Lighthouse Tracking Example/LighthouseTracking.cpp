@@ -377,12 +377,49 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 
 		// Get what type of device it is and work with its data
 		vr::ETrackedDeviceClass trackedDeviceClass = vr::VRSystem()->GetTrackedDeviceClass(unDevice);
+		// It appears that this method of getting the tracked device class is not
+		// automatically re-assigned when the role of the device changes.
+		vr::ETrackedDeviceClass iDeviceClass = static_cast<vr::ETrackedDeviceClass>(vr::VRSystem()->GetInt32TrackedDeviceProperty(unDevice, vr::Prop_DeviceClass_Int32));
+		// This is pretty annoying, but it looks like this allows us to get the correct device class
+		if (iDeviceClass != trackedDeviceClass && iDeviceClass != vr::ETrackedDeviceClass::TrackedDeviceClass_Invalid) {
+			trackedDeviceClass = iDeviceClass;
+		}
 
 		switch (trackedDeviceClass) {
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
 			break;
 
+		case vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker: {
+			char buf[1024];
 
+			if (!vr::VRSystem()->GetControllerStateWithPose(vr::TrackingUniverseStanding, unDevice,	&controllerState, sizeof(controllerState), devicePose))
+			{
+				sprintf_s(buf, sizeof(buf), "\rGeneric Tracker - failed to get controller state\t");
+				printf_s(buf);
+				fflush(stdout);
+			} else {
+
+				// get pose relative to the safe bounds defined by the user
+				//vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, &trackedDevicePose, 1);
+
+				// get the position and rotation
+				position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
+				quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);
+
+				position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
+				quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);
+
+				vVel = devicePose->vVelocity;
+				vAngVel = devicePose->vAngularVelocity;
+				eTrackingResult = devicePose->eTrackingResult;
+				bPoseValid = devicePose->bPoseIsValid;
+
+				sprintf_s(buf, sizeof(buf), "\rGeneric Tracker\txyz: (% .2f,  % .2f, % .2f)\t", position.v[0], position.v[1], position.v[2]);
+				printf_s(buf);
+				fflush(stdout);
+			}
+			break;
+		} // generic tracker
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller: {
 			// Simliar to the HMD case block above, please adapt as you like
 			// to get away with code duplication and general confusion
@@ -474,37 +511,6 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			}
 			break;
 		} // tracked device class controller
-		case vr::TrackedDeviceClass_GenericTracker: {
-			char buf[1024];
-
-			if (!vr::VRSystem()->GetControllerStateWithPose(
-				vr::TrackingUniverseStanding,
-				unDevice,
-				&controllerState,
-				sizeof(controllerState),
-				devicePose)) break;
-
-			// get pose relative to the safe bounds defined by the user
-			//vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, &trackedDevicePose, 1);
-
-			// get the position and rotation
-			position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
-			quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);
-
-			position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
-			quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);
-
-			vVel = devicePose->vVelocity;
-			vAngVel = devicePose->vAngularVelocity;
-			eTrackingResult = devicePose->eTrackingResult;
-			bPoseValid = devicePose->bPoseIsValid;
-
-			sprintf_s(buf, sizeof(buf), "\rGeneric Tracker\txyz: (% .2f,  % .2f, % .2f)\t", position.v[0], position.v[1], position.v[2]);
-			printf_s(buf);
-			fflush(stdout);
-
-			break;
-		} // generic tracker
 		case vr::TrackedDeviceClass_TrackingReference: {
 			// incomplete code, only here for switch reference
 			char buf[1024];
@@ -615,6 +621,8 @@ void LighthouseTracking::PrintDevices() {
 
 		}
 
+		int32_t iDeviceClass = vr::VRSystem()->GetInt32TrackedDeviceProperty(unDevice, vr::Prop_DeviceClass_Int32);
+
 		char manufacturer[1024];
 		vr::VRSystem()->GetStringTrackedDeviceProperty(unDevice, vr::ETrackedDeviceProperty::Prop_ManufacturerName_String, manufacturer, sizeof(manufacturer));
 
@@ -624,7 +632,7 @@ void LighthouseTracking::PrintDevices() {
 		char serialnumber[1024];
 		vr::VRSystem()->GetStringTrackedDeviceProperty(unDevice, vr::ETrackedDeviceProperty::Prop_SerialNumber_String, serialnumber, sizeof(serialnumber));
 
-		sprintf_s(buf, sizeof(buf), " %s - %s [%s]\n", manufacturer, modelnumber, serialnumber);
+		sprintf_s(buf, sizeof(buf), " %s - %s [%s] class(%d)\n", manufacturer, modelnumber, serialnumber, iDeviceClass);
 		printf_s(buf);
 	}
 	sprintf_s(buf, sizeof(buf), "---------------------------\nEnd of device list\n\n");

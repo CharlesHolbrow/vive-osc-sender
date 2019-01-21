@@ -55,9 +55,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		validArgs.push_back(myArg);
 	}
 
-	sprintf_s(buf, sizeof(buf), "Showing data for device: %d\n", showOnlyDevice);
-	printf_s(buf);
-
 	if (shouldPrintVersionAndQuit) {
 		printSoftwareVersion();
 		return EXIT_SUCCESS;
@@ -67,7 +64,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	// If false we'll parse tracking data continously, if true we parse when an openvr event fires
 	bool bAcquireTrackingDataByWaitingForVREvents = false;
 	// Hack to override the command line arg
-	showOnlyDevice = 3;
+	showOnlyDevice = 5;
+
+	sprintf_s(buf, sizeof(buf), "Showing data for device: %d\n", showOnlyDevice);
+	printf_s(buf);
+
 
 	// Create a new LighthouseTracking instance and parse as needed
 	LighthouseTracking *lighthouseTracking = new LighthouseTracking();
