@@ -356,16 +356,6 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 		vr::HmdVector3_t position;
 		vr::HmdQuaternion_t quaternion;
 
-
-		/*
-		if (vr::VRSystem()->IsInputFocusCapturedByAnotherProcess()) {
-			char buf[1024];
-
-			sprintf_s(buf, sizeof(buf), "\nInput Focus by Another Process\n");
-			printf_s(buf);
-		}
-		*/
-
 		bool bPoseValid; //= trackedDevicePose.bPoseIsValid;
 		vr::HmdVector3_t vVel;
 		vr::HmdVector3_t vAngVel;
