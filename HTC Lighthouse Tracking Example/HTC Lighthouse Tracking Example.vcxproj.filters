@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\oscpack">
+      <UniqueIdentifier>{ed605a3d-3c04-401d-9611-a3396bcbb201}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -37,6 +40,27 @@
     </ClCompile>
     <ClCompile Include="LighthouseTracking.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\oscpack_1_1_0\osc\OscOutboundPacketStream.cpp">
+      <Filter>Source Files\oscpack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\oscpack_1_1_0\osc\OscPrintReceivedElements.cpp">
+      <Filter>Source Files\oscpack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\oscpack_1_1_0\osc\OscReceivedElements.cpp">
+      <Filter>Source Files\oscpack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\oscpack_1_1_0\osc\OscTypes.cpp">
+      <Filter>Source Files\oscpack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\oscpack_1_1_0\ip\IpEndpointName.cpp">
+      <Filter>Source Files\oscpack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\oscpack_1_1_0\ip\win32\NetworkingUtils.cpp">
+      <Filter>Source Files\oscpack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\oscpack_1_1_0\ip\win32\UdpSocket.cpp">
+      <Filter>Source Files\oscpack</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

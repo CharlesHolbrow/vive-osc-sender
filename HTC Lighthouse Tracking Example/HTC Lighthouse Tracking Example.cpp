@@ -64,7 +64,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	// If false we'll parse tracking data continously, if true we parse when an openvr event fires
 	bool bAcquireTrackingDataByWaitingForVREvents = false;
 	// Hack to override the command line arg
-	showOnlyDevice = 5;
+	showOnlyDevice = 4;
 
 	sprintf_s(buf, sizeof(buf), "Showing data for device: %d\n", showOnlyDevice);
 	printf_s(buf);

@@ -4,6 +4,8 @@
 
 // OpenVR
 #include <openvr.h>
+#include "ip\UdpSocket.h"
+#include "osc\OscOutboundPacketStream.h"
 #include "samples\shared\Matrices.h"
 
 class LighthouseTracking {
@@ -20,6 +22,9 @@ private:
 
 	// If false the program will parse tracking data continously and not wait for openvr events
 	bool bWaitForEventsBeforeParsing = false;
+
+	// UdpTransmitSocket
+	UdpTransmitSocket transmitSocket = UdpTransmitSocket(IpEndpointName("127.0.0.1", 7000));
 
 public:
 	~LighthouseTracking();
