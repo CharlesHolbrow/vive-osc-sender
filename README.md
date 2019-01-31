@@ -1,9 +1,12 @@
 #  What is this?
-A rapid and simple example of how to start a background process for listening to HTC Vive Lighthouse tracking data. 
+
+A modified version of [Omnifinity's OpenVR Tracking Example](https://github.com/Omnifinity/OpenVR-Tracking-Example), for Windows updated to send osc.
 
 Uses OpenVR 1.1.3.
 
-Compiled using Visual Studio 2013. Please adapt as suitable. 
+Compiled using Visual Studio 2017.
+
+# Deprecated:
 
 ##  How do I run it?
 There is an executable in the Binary folder. Unarchive that and run it through a console after you've started Steam VR. Background processes are not allowed to start up SteamVR by themselves. 
