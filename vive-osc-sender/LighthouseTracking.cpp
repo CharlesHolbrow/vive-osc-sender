@@ -423,6 +423,8 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 				eTrackingResult = devicePose->eTrackingResult;
 				bPoseValid = devicePose->bPoseIsValid;
 
+				vr::VRControllerAxis_t t = controllerState.rAxis[vr::k_EButton_SteamVR_Trigger - vr::k_EButton_Axis0];
+
 				switch (eTrackingResult) {
 				case vr::ETrackingResult::TrackingResult_Running_OK:
 					// Get a char representing device class
@@ -447,7 +449,7 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 						break;
 					}
 
-					sprintf_s(buf, sizeof(buf), "\rTracked Device class-role:(%c-%c) xyz:(% .2f,  % .2f, % .2f)", cClass, cRole, position.v[0], position.v[1], position.v[2]);
+					sprintf_s(buf, sizeof(buf), "\rTracked Device class-role:(%c-%c) xyz:(% .2f,  % .2f, % .2f) trigger(% .2f,  % .2f)", cClass, cRole, position.v[0], position.v[1], position.v[2], t.x, t.y);
 					printf_s(buf);
 					fflush(stdout);
 					break;
