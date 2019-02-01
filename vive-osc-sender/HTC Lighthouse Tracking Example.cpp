@@ -69,7 +69,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	sprintf_s(buf, sizeof(buf), "Showing data for device: %d\n", showOnlyDevice);
 	printf_s(buf);
 
-
 	// Create a new LighthouseTracking instance and parse as needed
 	LighthouseTracking *lighthouseTracking = new LighthouseTracking();
 	if (lighthouseTracking) {

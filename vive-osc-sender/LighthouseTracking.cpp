@@ -47,7 +47,6 @@ LighthouseTracking::LighthouseTracking() {
 * Returns true if success or false if openvr has quit
 */
 bool LighthouseTracking::RunProcedure(bool bWaitForEvents, int filterIndex = -1) {
-
 	// Either A) wait for events, such as hand controller button press, before parsing...
 	if (bWaitForEvents) {
 		// Process VREvent
@@ -61,18 +60,14 @@ bool LighthouseTracking::RunProcedure(bool bWaitForEvents, int filterIndex = -1)
 				printf_s(buf);
 				return false;
 			}
-
 			// parse a frame
 			ParseTrackingFrame(filterIndex);
 		}
 	}
 	else {
 		// ... or B) continous parsint of tracking data irrespective of events
-		//std::cout << std::endl << "Parsing next frame...";
-
 		ParseTrackingFrame(filterIndex);
 	}
-
 	return true;
 }
 
@@ -80,8 +75,7 @@ bool LighthouseTracking::RunProcedure(bool bWaitForEvents, int filterIndex = -1)
 // Purpose: Processes a single VR event
 //-----------------------------------------------------------------------------
 
-bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterOutIndex = -1)
-{
+bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterOutIndex = -1) {
 	// if user supplied a device filter index only show events for that device
 	if (filterOutIndex != -1)
 		if (event.trackedDeviceIndex == filterOutIndex)
