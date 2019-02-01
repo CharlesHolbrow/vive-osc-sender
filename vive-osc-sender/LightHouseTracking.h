@@ -24,7 +24,7 @@ private:
 	bool bWaitForEventsBeforeParsing = false;
 
 	// UdpTransmitSocket
-	UdpTransmitSocket transmitSocket = UdpTransmitSocket(IpEndpointName("127.0.0.1", 7000));
+	UdpTransmitSocket transmitSocket = UdpTransmitSocket(IpEndpointName("127.0.0.1", 6969));
 
 public:
 	~LighthouseTracking();

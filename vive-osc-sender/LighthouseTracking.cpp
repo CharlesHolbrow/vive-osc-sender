@@ -35,12 +35,9 @@ LighthouseTracking::LighthouseTracking() {
 	osc::OutboundPacketStream p(buffer,1024);
 
 	p << osc::BeginBundleImmediate
-		<< osc::BeginMessage("/test1")
-		<< true << 23 << (float)3.1415 << "hello" << osc::EndMessage
-		<< osc::BeginMessage("/test2")
-		<< true << 24 << (float)10.8 << "world" << osc::EndMessage
-		<< osc::EndBundle;
-
+		<< osc::BeginMessage("/notice")
+		<< "vive-osc-sender launched"
+		<< osc::EndMessage << osc::EndBundle;
 	transmitSocket.Send(p.Data(), p.Size());
 }
 
@@ -404,9 +401,6 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 				fflush(stdout);
 			}
 			else {
-
-
-
 				// get pose relative to the safe bounds defined by the user
 				//vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, &trackedDevicePose, 1);
 				// 
@@ -415,15 +409,19 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 				position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
 				quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);
 
-				position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
-				quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);
 
 				vVel = devicePose->vVelocity;
 				vAngVel = devicePose->vAngularVelocity;
 				eTrackingResult = devicePose->eTrackingResult;
 				bPoseValid = devicePose->bPoseIsValid;
 
+				// This slightly weird way of getting trigger presses. See:
+				// https://github.com/ValveSoftware/openvr/issues/56
 				vr::VRControllerAxis_t t = controllerState.rAxis[vr::k_EButton_SteamVR_Trigger - vr::k_EButton_Axis0];
+
+				// OSC
+				char buffer[2048];
+				osc::OutboundPacketStream p(buffer, 2048);
 
 				switch (eTrackingResult) {
 				case vr::ETrackingResult::TrackingResult_Running_OK:
@@ -449,9 +447,21 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 						break;
 					}
 
-					sprintf_s(buf, sizeof(buf), "\rTracked Device class-role:(%c-%c) xyz:(% .2f,  % .2f, % .2f) trigger(% .2f,  % .2f)", cClass, cRole, position.v[0], position.v[1], position.v[2], t.x, t.y);
+					p //<< osc::BeginBundleImmediate
+						<< osc::BeginMessage("/controller")
+						<< position.v[0] << position.v[1] << position.v[2] 
+						<< static_cast<float>(quaternion.w) << static_cast<float>(quaternion.x)
+						<< static_cast<float>(quaternion.y) << static_cast<float>(quaternion.z)
+						<< t.x
+						<< osc::EndMessage; // << osc::EndBundle;
+					transmitSocket.Send(p.Data(), p.Size());
+
+					sprintf_s(buf, sizeof(buf), "\rTracked Device class-role:(%c-%c) xyz:(% .2f,  % .2f, % .2f) q(% .2f, % .2f, % .2f, % .2f) trigger(% .2f,  % .2f)",
+						cClass, cRole, position.v[0], position.v[1], position.v[2], quaternion.w, quaternion.x, quaternion.y, quaternion.z, t.x, t.y);
 					printf_s(buf);
 					fflush(stdout);
+
+
 					break;
 				case vr::ETrackingResult::TrackingResult_Uninitialized:
 					sprintf_s(buf, sizeof(buf), "\rInvalid tracking result       ");
