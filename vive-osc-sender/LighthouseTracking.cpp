@@ -353,7 +353,7 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			continue;
 		}
 
-		if (filterIndex != unDevice)
+		if (filterIndex != unDevice && filterIndex != -1)
 			continue;
 
 		vr::TrackedDevicePose_t trackedDevicePose;
@@ -409,7 +409,6 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 				position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
 				quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);
 
-
 				vVel = devicePose->vVelocity;
 				vAngVel = devicePose->vAngularVelocity;
 				eTrackingResult = devicePose->eTrackingResult;
@@ -420,18 +419,26 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 				vr::VRControllerAxis_t t = controllerState.rAxis[vr::k_EButton_SteamVR_Trigger - vr::k_EButton_Axis0];
 
 				// OSC
+				// If we want to send one bundle per frame, we would have to
+				// initialize the variable outside of the device loop. For now
+				// I'm just doing it here instead. Starting a bundle looks like
+				// this: p << osc::BeginBundleImmediate;
 				char buffer[2048];
-				osc::OutboundPacketStream p(buffer, 2048);
+				osc::OutboundPacketStream pStream(buffer, 2048);
 
 				switch (eTrackingResult) {
 				case vr::ETrackingResult::TrackingResult_Running_OK:
+					// At this point, we are definitely going to send an osc.
+
 					// Get a char representing device class
 					switch (trackedDeviceClass) {
 					case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller:
+						pStream << osc::BeginMessage("/controller");
 						cClass = 'C';
 						break;
 					case vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker:
-						cClass = 'G';
+						cClass = 'T';
+						pStream << osc::BeginMessage("/tracker");
 						break;
 					}
 					// Get a char representing the device role
@@ -447,20 +454,17 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 						break;
 					}
 
-					p //<< osc::BeginBundleImmediate
-						<< osc::BeginMessage("/controller")
-						<< position.v[0] << position.v[1] << position.v[2] 
+					pStream << position.v[0] << position.v[1] << position.v[2] 
 						<< static_cast<float>(quaternion.w) << static_cast<float>(quaternion.x)
 						<< static_cast<float>(quaternion.y) << static_cast<float>(quaternion.z)
 						<< t.x
-						<< osc::EndMessage; // << osc::EndBundle;
-					transmitSocket.Send(p.Data(), p.Size());
+						<< osc::EndMessage;
+					transmitSocket.Send(pStream.Data(), pStream.Size());
 
 					sprintf_s(buf, sizeof(buf), "\rTracked Device class-role:(%c-%c) xyz:(% .2f,  % .2f, % .2f) q(% .2f, % .2f, % .2f, % .2f) trigger(% .2f,  % .2f)",
 						cClass, cRole, position.v[0], position.v[1], position.v[2], quaternion.w, quaternion.x, quaternion.y, quaternion.z, t.x, t.y);
 					printf_s(buf);
 					fflush(stdout);
-
 
 					break;
 				case vr::ETrackingResult::TrackingResult_Uninitialized:
@@ -496,17 +500,15 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			}
 			break;
 		} // tracked device == controller || generic tracker
+
+		// Lighthouse base station
 		case vr::TrackedDeviceClass_TrackingReference: {
-			// incomplete code, only here for switch reference
-			char buf[1024];
-			sprintf_s(buf, sizeof(buf), "\rCamera / Base Station \n");
-			printf_s(buf);
 			break;
 		}
 
 		default: {
 			char buf[1024];
-			sprintf_s(buf, sizeof(buf), "\rUnsupported class: %d\n", trackedDeviceClass);
+			sprintf_s(buf, sizeof(buf), "Unsupported class: %d\n", trackedDeviceClass);
 			printf_s(buf);
 			}
 			break;
