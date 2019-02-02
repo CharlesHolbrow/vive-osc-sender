@@ -338,6 +338,9 @@ vr::HmdVector3_t LighthouseTracking::GetPosition(vr::HmdMatrix34_t matrix) {
 *
 */
 void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
+	int trackerIndex = 0;
+	int controllerIndex = 0;
+	char oscAddress[1024];
 
 	// Process SteamVR device states
 	for (vr::TrackedDeviceIndex_t unDevice = 0; unDevice < vr::k_unMaxTrackedDeviceCount; unDevice++)
@@ -427,12 +430,14 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 					// Get a char representing device class
 					switch (trackedDeviceClass) {
 					case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller:
-						pStream << osc::BeginMessage("/controller");
+						sprintf_s(oscAddress, sizeof(oscAddress), "/controller/%d", controllerIndex++);
+						pStream << osc::BeginMessage(oscAddress);
 						cClass = 'C';
 						break;
 					case vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker:
+						sprintf_s(oscAddress, sizeof(oscAddress), "/tracker/%d", tracker+Index++);
+						pStream << osc::BeginMessage(oscAddress);
 						cClass = 'T';
-						pStream << osc::BeginMessage("/tracker");
 						break;
 					}
 					// Get a char representing the device role
