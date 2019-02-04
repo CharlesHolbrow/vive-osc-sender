@@ -435,7 +435,7 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 						cClass = 'C';
 						break;
 					case vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker:
-						sprintf_s(oscAddress, sizeof(oscAddress), "/tracker/%d", tracker+Index++);
+						sprintf_s(oscAddress, sizeof(oscAddress), "/tracker/%d", trackerIndex++);
 						pStream << osc::BeginMessage(oscAddress);
 						cClass = 'T';
 						break;
