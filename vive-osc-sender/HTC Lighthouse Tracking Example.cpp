@@ -37,6 +37,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	int shouldPrintVersionAndQuit = 0;
 	int showOnlyDevice = -1;
 
+	int port = 9999;
+	char ip_address[15];
+	sprintf_s(ip_address, sizeof(ip_address), "127.0.0.1");
+
 	char buf[1024];
 
 	// very basic command line parser, from:
@@ -51,6 +55,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		if (myArg == std::string("--listdevices")) shouldListDevicesAndQuit = atoi(argv[i + 1]);
 		if (myArg == std::string("--showonlydeviceid")) showOnlyDevice = atoi(argv[i + 1]);
 		if (myArg == std::string("--v")) shouldPrintVersionAndQuit = 1;
+		if (myArg == std::string("--ip")) sprintf_s(ip_address, sizeof(ip_address), argv[i + 1]);
+		if (myArg == std::string("--port")) port = atoi(argv[i + 1]);
 
 		validArgs.push_back(myArg);
 	}
@@ -70,7 +76,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	printf_s(buf);
 
 	// Create a new LighthouseTracking instance and parse as needed
-	LighthouseTracking *lighthouseTracking = new LighthouseTracking();
+	LighthouseTracking *lighthouseTracking = new LighthouseTracking(IpEndpointName(ip_address, port));
 	if (lighthouseTracking) {
 		if (shouldListDevicesAndQuit) {
 			parseTrackingData = false;

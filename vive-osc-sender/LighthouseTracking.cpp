@@ -18,7 +18,8 @@ LighthouseTracking::~LighthouseTracking() {
 }
 
 // Constructor
-LighthouseTracking::LighthouseTracking() {
+LighthouseTracking::LighthouseTracking(IpEndpointName ip)
+	: transmitSocket(ip){
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pHMD = vr::VR_Init(&eError, vr::VRApplication_Background);
 
