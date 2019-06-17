@@ -24,11 +24,11 @@ private:
 	bool bWaitForEventsBeforeParsing = false;
 
 	// UdpTransmitSocket
-	UdpTransmitSocket transmitSocket = UdpTransmitSocket(IpEndpointName("127.0.0.1", 6969));
+	UdpTransmitSocket transmitSocket;
 
 public:
 	~LighthouseTracking();
-	LighthouseTracking();
+	LighthouseTracking(IpEndpointName ip);
 
 	// Main loop that listens for openvr events and calls process and parse routines, if false the service has quit
 	bool RunProcedure(bool bWaitForEvents, int filterIndex);
