@@ -392,7 +392,7 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker: {
 			char buf[1024];
 
-			if (!vr::VRSystem()->GetControllerStateWithPose(vr::TrackingUniverseStanding, unDevice,	&controllerState, sizeof(controllerState), devicePose))
+			if (!vr::VRSystem()->GetControllerStateWithPose(vr::TrackingUniverseStanding, unDevice, &controllerState, sizeof(controllerState), devicePose))
 			{
 				sprintf_s(buf, sizeof(buf), "Generic Tracker/Controller - failed to get device state\n");
 				printf_s(buf);
@@ -404,17 +404,22 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 				// 
 				role = vr::VRSystem()->GetControllerRoleForTrackedDeviceIndex(unDevice);
 				// get the position and rotation
-				position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
+				position = GetPosition(devicePose->mDeviceToAbsoluteTracking); // Is this doing what we expect? What does "absoluteTracking" mean?
 				quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);
 
 				vVel = devicePose->vVelocity;
 				vAngVel = devicePose->vAngularVelocity;
 				eTrackingResult = devicePose->eTrackingResult;
-				bPoseValid = devicePose->bPoseIsValid;
+				bPoseValid = devicePose->bPoseIsValid; // CAUTION: We don't really know why a pose is invalid!
 
 				// This slightly weird way of getting trigger presses. See:
 				// https://github.com/ValveSoftware/openvr/issues/56
 				vr::VRControllerAxis_t t = controllerState.rAxis[vr::k_EButton_SteamVR_Trigger - vr::k_EButton_Axis0];
+
+				// If the pose is invalid OR the tracking result is not ok
+				if (!bPoseValid || eTrackingResult != vr::ETrackingResult::TrackingResult_Running_OK) {
+					continue;
+				}
 
 				// OSC
 				// If we want to send one bundle per frame, we would have to
@@ -492,10 +497,6 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 					printf_s(buf);
 					fflush(stdout);
 					break;
-				}
-
-				if (!bPoseValid || eTrackingResult != vr::ETrackingResult::TrackingResult_Running_OK) {
-					continue;
 				}
 			}
 			break;
