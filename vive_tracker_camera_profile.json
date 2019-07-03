@@ -1,0 +1,30 @@
+{
+  "bindings": {
+    "/actions/demo": {
+      "poses": [
+        {
+          "output": "/actions/demo/in/tracker",
+          "path": "/user/hand/left/pose/raw"
+        }
+      ]
+    }
+  },
+  "controller_type": "vive_tracker_camera",
+  "input_bindingui_mode": "single_device",
+  "input_bindingui_right": {
+    "image": "{htc}/icons/vive_tracker.svg"
+  },
+  "input_source": {
+    "/input/power": {
+      "type": "button",
+      "order": 1,
+      "binding_image_point": [ 90, 80 ]
+    },
+    "/pose/raw": {
+      "output": "/actions/demo/in/tracker",
+      "type": "pose",
+      "binding_image_point": [ 100, 90 ]
+    }
+  },
+  "jsonid": "input_profile"
+}

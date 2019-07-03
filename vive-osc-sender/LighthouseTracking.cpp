@@ -22,14 +22,115 @@ LighthouseTracking::LighthouseTracking(IpEndpointName ip)
 	: transmitSocket(ip){
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pHMD = vr::VR_Init(&eError, vr::VRApplication_Background);
+	char buf[1024];
 
 	if (eError != vr::VRInitError_None)
 	{
 		m_pHMD = NULL;
-		char buf[1024];
 		sprintf_s(buf, sizeof(buf), "Unable to init VR runtime: %s", vr::VR_GetVRInitErrorAsEnglishDescription(eError));
 		printf_s(buf);
 		exit(EXIT_FAILURE);
+	}
+
+	/*/ Ensure VR Compositor is avail, otherwise getting poses causes a crash (openvr v1.3.22)
+	if (!BInitCompositor()) {
+		//printf("%s - Failed to initialize VR Compositor!\n", __FUNCTION__);
+		sprintf_s(buf, sizeof(buf), "%s - Failed to initialize VR Compositor!", __FUNCTION__);
+		printf_s(buf);
+		exit(EXIT_FAILURE);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully initialized VR Compositor\n");
+		printf_s(buf);
+	}*/
+
+	// Prepare manifest file
+	const char *manifestPath = "C:/projects-charles/vive-osc-sender/vive_debugger_actions.json";
+	vr::EVRInputError inputError = vr::VRInput()->SetActionManifestPath(manifestPath);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to set manifest path: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully set manifest path: %s\n", manifestPath);
+		printf_s(buf);
+	}
+
+	// Handles for the new IVRInput
+	inputError = vr::VRInput()->GetActionSetHandle(actionSetDemoPath, &m_actionSetDemo);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get action set handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s action set handle: %d\n", actionSetDemoPath, m_actionSetDemo);
+		printf_s(buf);
+	}
+
+	// handle for left controller pose
+	inputError = vr::VRInput()->GetActionHandle(actionDemoControllerPath, &m_actionDemoController);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoControllerPath, m_actionDemoController);
+		printf_s(buf);
+	}
+
+	// handle for right controller pose
+	inputError = vr::VRInput()->GetActionHandle(actionDemoControllerPath, &m_actionDemoController);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoControllerPath, m_actionDemoController);
+		printf_s(buf);
+	}
+
+	// handle for tracker pose
+	inputError = vr::VRInput()->GetActionHandle(actionDemoTrackerPath, &m_actionDemoTracker);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoTrackerPath, m_actionDemoTracker);
+		printf_s(buf);
+	}
+
+	// handle for analog trackpad action
+	inputError = vr::VRInput()->GetActionHandle(actionDemoAnalogInputPath, &m_actionAnalogInput);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoAnalogInputPath, m_actionAnalogInput);
+		printf_s(buf);
+	}
+
+	// handle for a hide cube action
+	inputError = vr::VRInput()->GetActionHandle(actionDemoHideCubesPath, &m_actionHideCubes);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoHideCubesPath, m_actionHideCubes);
+		printf_s(buf);
+	}
+
+	// handle for controller pose source - not used atm
+	inputError = vr::VRInput()->GetInputSourceHandle(inputHandLeftPath, &m_inputHandLeftPath);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get input handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s input handle: %d\n", inputHandLeftPath, m_inputHandLeftPath);
+		printf_s(buf);
 	}
 
 	char buffer[1024];
@@ -323,6 +424,35 @@ vr::HmdVector3_t LighthouseTracking::GetPosition(vr::HmdMatrix34_t matrix) {
 	return vector;
 }
 
+void LighthouseTracking::StoreLeftControllerPosition(vr::HmdVector3_t vector) {
+	m_vecLeftController.v[0] = vector.v[0];
+	m_vecLeftController.v[1] = vector.v[1];
+	m_vecLeftController.v[2] = vector.v[2];
+}
+void LighthouseTracking::StoreRightControllerPosition(vr::HmdVector3_t vector) {
+	m_vecRightController.v[0] = vector.v[0];
+	m_vecRightController.v[1] = vector.v[1];
+	m_vecRightController.v[2] = vector.v[2];
+}
+
+vr::HmdVector3_t LighthouseTracking::GetLeftControllerPosition() {
+	return m_vecLeftController;
+}
+
+vr::HmdVector3_t LighthouseTracking::GetRightControllerPosition() {
+	return m_vecRightController;
+}
+
+
+vr::HmdVector3_t LighthouseTracking::GetControllerPositionDelta() {
+	vr::HmdVector3_t vecDiff;
+	vecDiff.v[0] = m_vecLeftController.v[0] - m_vecRightController.v[0];
+	vecDiff.v[1] = m_vecLeftController.v[1] - m_vecRightController.v[1];
+	vecDiff.v[2] = m_vecLeftController.v[2] - m_vecRightController.v[2];
+	return vecDiff;
+}
+
+
 /*
 * Parse a Frame with data from the tracking system
 *
@@ -339,87 +469,168 @@ vr::HmdVector3_t LighthouseTracking::GetPosition(vr::HmdMatrix34_t matrix) {
 *
 */
 void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
-	int trackerIndex = 0;
-	int controllerIndex = 0;
-	char oscAddress[1024];
 
-	// Process SteamVR device states
-	for (vr::TrackedDeviceIndex_t unDevice = 0; unDevice < vr::k_unMaxTrackedDeviceCount; unDevice++)
+	char buf[1024];
+	vr::EVRInputError inputError;
+
+	sprintf_s(buf, sizeof(buf), "");
+	printf_s(buf);
+
+	// Process SteamVR action state
+	// UpdateActionState is called each frame to update the state of the actions themselves. The application
+	// controls which action sets are active with the provided array of VRActiveActionSet_t structs.
+	vr::VRActiveActionSet_t actionSet = { 0 };
+	actionSet.ulActionSet = m_actionSetDemo;
+	inputError = vr::VRInput()->UpdateActionState(&actionSet, sizeof(actionSet), 1);
+	if (inputError == vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "UpdateActionState(): Ok\n");
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "UpdateActionState(): Error: %d\n", inputError);
+		printf_s(buf);
+	}
+
+	/*// Get analog data
+	vr::InputAnalogActionData_t analogData;
+	inputError = vr::VRInput()->GetAnalogActionData(m_actionAnalogInput, &analogData, sizeof(analogData), vr::k_ulInvalidInputValueHandle);
+	if (inputError == vr::VRInputError_None)
 	{
-		// if not connected just skip the rest of the routine
-		if (!m_pHMD->IsTrackedDeviceConnected(unDevice)) {
-			continue;
+		sprintf_s(buf, sizeof(buf), "%s | GetAnalogActionData() Ok\n", actionDemoAnalogInputPath);
+		printf_s(buf);
+
+		if (analogData.bActive) {
+			float m_vAnalogValue0 = analogData.x;
+			float m_vAnalogValue1 = analogData.y;
+			sprintf_s(buf, sizeof(buf), "%s | x: %f  y:%f\n", actionDemoAnalogInputPath, m_vAnalogValue0, m_vAnalogValue1);
+			printf_s(buf);
 		}
-
-		if (filterIndex != unDevice && filterIndex != -1)
-			continue;
-
-		vr::TrackedDevicePose_t trackedDevicePose;
-		vr::TrackedDevicePose_t *devicePose = &trackedDevicePose;
-
-		vr::VRControllerState_t controllerState;
-		vr::VRControllerState_t *ontrollerState_ptr = &controllerState;
-
-		vr::HmdVector3_t position;
-		vr::HmdQuaternion_t quaternion;
-
-		bool bPoseValid; //= trackedDevicePose.bPoseIsValid;
-		vr::HmdVector3_t vVel;
-		vr::HmdVector3_t vAngVel;
-		vr::ETrackingResult eTrackingResult;
-
-		// Charles: I'm adding these to the sample because it helps me understand what's going on
-		vr::ETrackedControllerRole role; // for controllers, what role 
-		char cRole = '?'; // for controllers, which hand is it?
-		char cClass = '?';
-
-		// Get what type of device it is and work with its data. The results returned
-		// by GetTrackedDeviceClass automatically change when openvr believes the
-		// device switched hands. It's trying to help.
-		vr::ETrackedDeviceClass trackedDeviceClass = vr::VRSystem()->GetTrackedDeviceClass(unDevice);
-		// It appears that this method of getting the tracked device class is not
-		// automatically re-assigned when the role of the device changes.
-		vr::ETrackedDeviceClass iDeviceClass = static_cast<vr::ETrackedDeviceClass>(vr::VRSystem()->GetInt32TrackedDeviceProperty(unDevice, vr::Prop_DeviceClass_Int32));
-		// This is pretty annoying, but it looks like this allows us to get the correct device class
-		if (iDeviceClass != trackedDeviceClass && iDeviceClass != vr::ETrackedDeviceClass::TrackedDeviceClass_Invalid) {
-			trackedDeviceClass = iDeviceClass;
+		else {
+			sprintf_s(buf, sizeof(buf), "%s | action not avail to be bound\n", actionDemoAnalogInputPath);
+			printf_s(buf);
 		}
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "%s | GetAnalogActionData() Not Ok. Error: %d\n", actionDemoAnalogInputPath, inputError);
+		printf_s(buf);
+	}
 
-		switch (trackedDeviceClass) {
-		case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
-			break;
-		case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller:
-		case vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker: {
-			char buf[1024];
 
-			if (!vr::VRSystem()->GetControllerStateWithPose(vr::TrackingUniverseStanding, unDevice, &controllerState, sizeof(controllerState), devicePose))
-			{
-				sprintf_s(buf, sizeof(buf), "Generic Tracker/Controller - failed to get device state\n");
-				printf_s(buf);
-				fflush(stdout);
-			}
-			else {
-				// get pose relative to the safe bounds defined by the user
-				//vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, &trackedDevicePose, 1);
-				// 
-				role = vr::VRSystem()->GetControllerRoleForTrackedDeviceIndex(unDevice);
-				// get the position and rotation
-				position = GetPosition(devicePose->mDeviceToAbsoluteTracking); // Is this doing what we expect? What does "absoluteTracking" mean?
-				quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);
+	// Get digital data
+	vr::InputDigitalActionData_t digitalData;
+	inputError = vr::VRInput()->GetDigitalActionData(m_actionHideCubes, &digitalData, sizeof(digitalData), vr::k_ulInvalidInputValueHandle);
+	if (inputError == vr::VRInputError_None)
+	{
+		sprintf_s(buf, sizeof(buf), "%s | GetDigitalActionData() Ok\n", actionDemoHideCubesPath);
+		printf_s(buf);
 
-				vVel = devicePose->vVelocity;
-				vAngVel = devicePose->vAngularVelocity;
-				eTrackingResult = devicePose->eTrackingResult;
-				bPoseValid = devicePose->bPoseIsValid; // CAUTION: We don't really know why a pose is invalid!
+		if (digitalData.bActive) {
+			bool m_vDigitalValue0 = digitalData.bState;
+			sprintf_s(buf, sizeof(buf), "%s | State: %d\n", actionDemoHideCubesPath, m_vDigitalValue0);
+			printf_s(buf);
+		}
+		else {
+			sprintf_s(buf, sizeof(buf), "%s | action not avail to be bound\n", actionDemoHideCubesPath);
+			printf_s(buf);
+		}
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "%s | GetDigitalActionData() Not Ok. Error: %d\n", actionDemoHideCubesPath, inputError);
+		printf_s(buf);
+	}*/
 
-				// This slightly weird way of getting trigger presses. See:
-				// https://github.com/ValveSoftware/openvr/issues/56
-				vr::VRControllerAxis_t t = controllerState.rAxis[vr::k_EButton_SteamVR_Trigger - vr::k_EButton_Axis0];
+	
+	// get pose data
+	vr::InputPoseActionData_t poseController;
+	inputError = vr::VRInput()->GetPoseActionDataRelativeToNow(m_actionDemoController, vr::TrackingUniverseStanding, 0, &poseController, sizeof(poseController), vr::k_ulInvalidInputValueHandle);
 
-				// If the pose is invalid OR the tracking result is not ok
-				if (!bPoseValid || eTrackingResult != vr::ETrackingResult::TrackingResult_Running_OK) {
-					continue;
-				}
+	if (inputError == vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "\n%s | GetPoseActionData() Ok\n", actionDemoControllerPath);
+		printf_s(buf);
+
+		if (poseController.bActive) {
+			vr::VRInputValueHandle_t activeOrigin = poseController.activeOrigin;
+			bool bPoseIsValid = poseController.pose.bPoseIsValid;
+			bool bDeviceIsConnected = poseController.pose.bDeviceIsConnected;
+			sprintf_s(buf, sizeof(buf), "\nController --- Origin: %d Validity: %d DeviceIsConnected: %d\n", activeOrigin, bPoseIsValid, bDeviceIsConnected);
+			printf_s(buf);
+
+
+			// Code below is old ---> 
+			vr::HmdVector3_t position;
+			vr::HmdQuaternion_t quaternion;
+
+			// get the position and rotation
+			position = GetPosition(poseController.pose.mDeviceToAbsoluteTracking);
+			quaternion = GetRotation(poseController.pose.mDeviceToAbsoluteTracking);
+
+			// print the tracking data
+			//if (printHmdTrackingData) {
+			sprintf_s(buf, sizeof(buf), "\nPose\nx: %.2f y: %.2f z: %.2f\n", position.v[0], position.v[1], position.v[2]);
+			printf_s(buf);
+			sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
+			printf_s(buf);
+			//}
+			// <--- End of old code 
+
+
+		}
+		else {
+			sprintf_s(buf, sizeof(buf), "%s | action not avail to be bound\n", actionDemoControllerPath);
+			printf_s(buf);
+		}
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "%s | GetPoseActionData() Call Not Ok. Error: %d\n", actionDemoControllerPath, inputError);
+		printf_s(buf);
+	}
+
+
+	vr::InputPoseActionData_t poseTracker;
+	inputError = vr::VRInput()->GetPoseActionDataRelativeToNow(m_actionDemoTracker, vr::TrackingUniverseStanding, 0, &poseTracker, sizeof(poseTracker), vr::k_ulInvalidInputValueHandle);
+	if (inputError == vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "%s | GetPoseActionData() Ok\n", actionDemoTrackerPath);
+		printf_s(buf);
+
+		if (poseTracker.bActive) {
+			vr::VRInputValueHandle_t activeOrigin = poseTracker.activeOrigin;
+			bool bPoseIsValid = poseTracker.pose.bPoseIsValid;
+			bool bDeviceIsConnected = poseTracker.pose.bDeviceIsConnected;
+			sprintf_s(buf, sizeof(buf), "\nTracker --- Origin: %d Validity: %d DeviceIsConnected: %d\n", activeOrigin, bPoseIsValid, bDeviceIsConnected);
+			printf_s(buf);
+
+
+			// Code below is old ---> 
+			vr::HmdVector3_t position;
+			vr::HmdQuaternion_t quaternion;
+
+			// get the position and rotation
+			position = GetPosition(poseTracker.pose.mDeviceToAbsoluteTracking);
+			quaternion = GetRotation(poseTracker.pose.mDeviceToAbsoluteTracking);
+
+			// print the tracking data
+			//if (printHmdTrackingData) {
+			sprintf_s(buf, sizeof(buf), "\nPose\nx: %.2f y: %.2f z: %.2f\n", position.v[0], position.v[1], position.v[2]);
+			printf_s(buf);
+			sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
+			printf_s(buf);
+			//}
+			// <--- End of old code 
+
+
+		}
+		else {
+			sprintf_s(buf, sizeof(buf), "%s | action not avail to be bound\n", actionDemoTrackerPath);
+			printf_s(buf);
+		}
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "%s | GetPoseActionData() Call Not Ok. Error: %d\n", actionDemoTrackerPath, inputError);
+		printf_s(buf);
+	}
+}
+
+/*
 
 				// OSC
 				// If we want to send one bundle per frame, we would have to
@@ -515,7 +726,7 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			break;
 		}
 	}
-}
+}*/
 
 void LighthouseTracking::PrintDevices() {
 
