@@ -6,7 +6,7 @@
         "poses": [
           
           {
-            "output": "/actions/demo/in/Tracker",
+            "output": "/actions/demo/in/Controller",
             "path": "/user/hand/right/pose/raw"
           }
         ],

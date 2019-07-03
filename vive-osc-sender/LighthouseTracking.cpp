@@ -470,7 +470,9 @@ vr::HmdVector3_t LighthouseTracking::GetControllerPositionDelta() {
 */
 void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 
+	char buffer[2048];
 	char buf[1024];
+	char oscAddress[1024];
 	vr::EVRInputError inputError;
 
 	sprintf_s(buf, sizeof(buf), "");
@@ -552,7 +554,6 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			vr::VRInputValueHandle_t activeOrigin = poseController.activeOrigin;
 			bool bPoseIsValid = poseController.pose.bPoseIsValid;
 			bool bDeviceIsConnected = poseController.pose.bDeviceIsConnected;
-			sprintf_s(buf, sizeof(buf), "\nController --- Origin: %d Validity: %d DeviceIsConnected: %d\n", activeOrigin, bPoseIsValid, bDeviceIsConnected);
 			printf_s(buf);
 
 
@@ -564,16 +565,24 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			position = GetPosition(poseController.pose.mDeviceToAbsoluteTracking);
 			quaternion = GetRotation(poseController.pose.mDeviceToAbsoluteTracking);
 
-			// print the tracking data
-			//if (printHmdTrackingData) {
-			sprintf_s(buf, sizeof(buf), "\nPose\nx: %.2f y: %.2f z: %.2f\n", position.v[0], position.v[1], position.v[2]);
-			printf_s(buf);
-			sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
-			printf_s(buf);
-			//}
-			// <--- End of old code 
+			// OSC
+			// If we want to send one bundle per frame, we would have to
+			// initialize the variable outside of the device loop. For now
+			// I'm just doing it here instead. Starting a bundle looks like
+			// this: p << osc::BeginBundleImmediate;
+			osc::OutboundPacketStream pStream(buffer, 2048);
+			sprintf_s(oscAddress, sizeof(oscAddress), "/controller");
+			pStream << osc::BeginMessage(oscAddress);
 
+			pStream << position.v[0] << position.v[1] << position.v[2] 
+				<< static_cast<float>(quaternion.w) << static_cast<float>(quaternion.x)
+				<< static_cast<float>(quaternion.y) << static_cast<float>(quaternion.z)
+				<< osc::EndMessage;
+			transmitSocket.Send(pStream.Data(), pStream.Size());
 
+			sprintf_s(buf, sizeof(buf), "\rTracked Device class-role:(%c) xyz:(% .2f,  % .2f, % .2f) q(% .2f, % .2f, % .2f, % .2f)",
+				'C', position.v[0], position.v[1], position.v[2], quaternion.w, quaternion.x, quaternion.y, quaternion.z);
+			printf_s(buf);
 		}
 		else {
 			sprintf_s(buf, sizeof(buf), "%s | action not avail to be bound\n", actionDemoControllerPath);
@@ -589,14 +598,13 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 	vr::InputPoseActionData_t poseTracker;
 	inputError = vr::VRInput()->GetPoseActionDataRelativeToNow(m_actionDemoTracker, vr::TrackingUniverseStanding, 0, &poseTracker, sizeof(poseTracker), vr::k_ulInvalidInputValueHandle);
 	if (inputError == vr::VRInputError_None) {
-		sprintf_s(buf, sizeof(buf), "%s | GetPoseActionData() Ok\n", actionDemoTrackerPath);
 		printf_s(buf);
 
 		if (poseTracker.bActive) {
 			vr::VRInputValueHandle_t activeOrigin = poseTracker.activeOrigin;
 			bool bPoseIsValid = poseTracker.pose.bPoseIsValid;
 			bool bDeviceIsConnected = poseTracker.pose.bDeviceIsConnected;
-			sprintf_s(buf, sizeof(buf), "\nTracker --- Origin: %d Validity: %d DeviceIsConnected: %d\n", activeOrigin, bPoseIsValid, bDeviceIsConnected);
+			sprintf_s(buf, sizeof(buf), "Tracker --- Origin: %d Validity: %d DeviceIsConnected: %d\n\n", activeOrigin, bPoseIsValid, bDeviceIsConnected);
 			printf_s(buf);
 
 
@@ -608,22 +616,35 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			position = GetPosition(poseTracker.pose.mDeviceToAbsoluteTracking);
 			quaternion = GetRotation(poseTracker.pose.mDeviceToAbsoluteTracking);
 
-			// print the tracking data
-			//if (printHmdTrackingData) {
-			sprintf_s(buf, sizeof(buf), "\nPose\nx: %.2f y: %.2f z: %.2f\n", position.v[0], position.v[1], position.v[2]);
-			printf_s(buf);
-			sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
-			printf_s(buf);
-			//}
-			// <--- End of old code 
+			// OSC
+			// If we want to send one bundle per frame, we would have to
+			// initialize the variable outside of the device loop. For now
+			// I'm just doing it here instead. Starting a bundle looks like
+			// this: p << osc::BeginBundleImmediate;
+			char buffer[2048];
+			osc::OutboundPacketStream pStream(buffer, 2048);
 
+			sprintf_s(oscAddress, sizeof(oscAddress), "/tracker");
+			pStream << osc::BeginMessage(oscAddress);
+
+			pStream << position.v[0] << position.v[1] << position.v[2] 
+					<< static_cast<float>(quaternion.w) << static_cast<float>(quaternion.x)
+					<< static_cast<float>(quaternion.y) << static_cast<float>(quaternion.z)
+					<< osc::EndMessage;
+			transmitSocket.Send(pStream.Data(), pStream.Size());
+
+			sprintf_s(buf, sizeof(buf), "\rTracked Device class-role:(%c) xyz:(% .2f,  % .2f, % .2f) q(% .2f, % .2f, % .2f, % .2f)",
+					'T', position.v[0], position.v[1], position.v[2], quaternion.w, quaternion.x, quaternion.y, quaternion.z);
+				printf_s(buf);
 
 		}
+	
+		
 		else {
 			sprintf_s(buf, sizeof(buf), "%s | action not avail to be bound\n", actionDemoTrackerPath);
 			printf_s(buf);
+			}
 		}
-	}
 	else {
 		sprintf_s(buf, sizeof(buf), "%s | GetPoseActionData() Call Not Ok. Error: %d\n", actionDemoTrackerPath, inputError);
 		printf_s(buf);
