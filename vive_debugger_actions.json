@@ -5,8 +5,8 @@
       "binding_url": "vive_debugger_bindings_vive_controller.json"
     },
     {
-      "controller_type": "vive_tracker_handed",
-      "binding_url": "legacy_bindings_vive_tracker_handed.json"
+      "controller_type": "vive_tracker_left_foot",
+      "binding_url": "legacy_bindings_vive_tracker.json"
     }
   ],
   "actions": [
@@ -19,20 +19,20 @@
       "type": "vector2"
     },
     {
-      "name": "/actions/demo/in/Tracker",
+      "name": "/actions/demo/in/Controller",
       "type": "pose"
     },
     {
-      "name": "/actions/demo/in/Controller",
+      "name": "/actions/demo/in/Tracker",
       "type": "pose"
     }
   ],
-    "localization" : [
-        {
-            "language_tag": "en_US",
-            "/actions/demo/in/AnalogInput" : "Analog Input",
-            "/actions/demo/in/Hand_Right" : "Right Hand Pose",
-            "/actions/demo/in/Hand_Left" : "Left Hand Pose"
-        }
-    ]
+  "localization": [
+    {
+      "language_tag": "en_US",
+      "/actions/demo/in/AnalogInput": "Analog Input",
+      "/actions/demo/in/Hand_Right": "Right Hand Pose",
+      "/actions/demo/in/Hand_Left": "Left Hand Pose"
+    }
+  ]
 }

@@ -67,18 +67,7 @@ LighthouseTracking::LighthouseTracking(IpEndpointName ip)
 		printf_s(buf);
 	}
 
-	// handle for left controller pose
-	inputError = vr::VRInput()->GetActionHandle(actionDemoControllerPath, &m_actionDemoController);
-	if (inputError != vr::VRInputError_None) {
-		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
-		printf_s(buf);
-	}
-	else {
-		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoControllerPath, m_actionDemoController);
-		printf_s(buf);
-	}
-
-	// handle for right controller pose
+	// handle for controller pose
 	inputError = vr::VRInput()->GetActionHandle(actionDemoControllerPath, &m_actionDemoController);
 	if (inputError != vr::VRInputError_None) {
 		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
@@ -100,38 +89,6 @@ LighthouseTracking::LighthouseTracking(IpEndpointName ip)
 		printf_s(buf);
 	}
 
-	// handle for analog trackpad action
-	inputError = vr::VRInput()->GetActionHandle(actionDemoAnalogInputPath, &m_actionAnalogInput);
-	if (inputError != vr::VRInputError_None) {
-		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
-		printf_s(buf);
-	}
-	else {
-		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoAnalogInputPath, m_actionAnalogInput);
-		printf_s(buf);
-	}
-
-	// handle for a hide cube action
-	inputError = vr::VRInput()->GetActionHandle(actionDemoHideCubesPath, &m_actionHideCubes);
-	if (inputError != vr::VRInputError_None) {
-		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
-		printf_s(buf);
-	}
-	else {
-		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoHideCubesPath, m_actionHideCubes);
-		printf_s(buf);
-	}
-
-	// handle for controller pose source - not used atm
-	inputError = vr::VRInput()->GetInputSourceHandle(inputHandLeftPath, &m_inputHandLeftPath);
-	if (inputError != vr::VRInputError_None) {
-		sprintf_s(buf, sizeof(buf), "Error: Unable to get input handle: %d\n", inputError);
-		printf_s(buf);
-	}
-	else {
-		sprintf_s(buf, sizeof(buf), "Successfully got %s input handle: %d\n", inputHandLeftPath, m_inputHandLeftPath);
-		printf_s(buf);
-	}
 
 	char buffer[1024];
 	osc::OutboundPacketStream p(buffer,1024);
@@ -484,78 +441,23 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 	vr::VRActiveActionSet_t actionSet = { 0 };
 	actionSet.ulActionSet = m_actionSetDemo;
 	inputError = vr::VRInput()->UpdateActionState(&actionSet, sizeof(actionSet), 1);
-	if (inputError == vr::VRInputError_None) {
-		sprintf_s(buf, sizeof(buf), "UpdateActionState(): Ok\n");
-		printf_s(buf);
-	}
-	else {
+	if (inputError != vr::VRInputError_None) {
 		sprintf_s(buf, sizeof(buf), "UpdateActionState(): Error: %d\n", inputError);
 		printf_s(buf);
 	}
 
-	/*// Get analog data
-	vr::InputAnalogActionData_t analogData;
-	inputError = vr::VRInput()->GetAnalogActionData(m_actionAnalogInput, &analogData, sizeof(analogData), vr::k_ulInvalidInputValueHandle);
-	if (inputError == vr::VRInputError_None)
-	{
-		sprintf_s(buf, sizeof(buf), "%s | GetAnalogActionData() Ok\n", actionDemoAnalogInputPath);
-		printf_s(buf);
-
-		if (analogData.bActive) {
-			float m_vAnalogValue0 = analogData.x;
-			float m_vAnalogValue1 = analogData.y;
-			sprintf_s(buf, sizeof(buf), "%s | x: %f  y:%f\n", actionDemoAnalogInputPath, m_vAnalogValue0, m_vAnalogValue1);
-			printf_s(buf);
-		}
-		else {
-			sprintf_s(buf, sizeof(buf), "%s | action not avail to be bound\n", actionDemoAnalogInputPath);
-			printf_s(buf);
-		}
-	}
-	else {
-		sprintf_s(buf, sizeof(buf), "%s | GetAnalogActionData() Not Ok. Error: %d\n", actionDemoAnalogInputPath, inputError);
-		printf_s(buf);
-	}
-
-
-	// Get digital data
-	vr::InputDigitalActionData_t digitalData;
-	inputError = vr::VRInput()->GetDigitalActionData(m_actionHideCubes, &digitalData, sizeof(digitalData), vr::k_ulInvalidInputValueHandle);
-	if (inputError == vr::VRInputError_None)
-	{
-		sprintf_s(buf, sizeof(buf), "%s | GetDigitalActionData() Ok\n", actionDemoHideCubesPath);
-		printf_s(buf);
-
-		if (digitalData.bActive) {
-			bool m_vDigitalValue0 = digitalData.bState;
-			sprintf_s(buf, sizeof(buf), "%s | State: %d\n", actionDemoHideCubesPath, m_vDigitalValue0);
-			printf_s(buf);
-		}
-		else {
-			sprintf_s(buf, sizeof(buf), "%s | action not avail to be bound\n", actionDemoHideCubesPath);
-			printf_s(buf);
-		}
-	}
-	else {
-		sprintf_s(buf, sizeof(buf), "%s | GetDigitalActionData() Not Ok. Error: %d\n", actionDemoHideCubesPath, inputError);
-		printf_s(buf);
-	}*/
-
-	
 	// get pose data
 	vr::InputPoseActionData_t poseController;
 	inputError = vr::VRInput()->GetPoseActionDataRelativeToNow(m_actionDemoController, vr::TrackingUniverseStanding, 0, &poseController, sizeof(poseController), vr::k_ulInvalidInputValueHandle);
 
 	if (inputError == vr::VRInputError_None) {
-		sprintf_s(buf, sizeof(buf), "\n%s | GetPoseActionData() Ok\n", actionDemoControllerPath);
-		printf_s(buf);
+		//sprintf_s(buf, sizeof(buf), "\n%s | GetPoseActionData() Ok\n", actionDemoControllerPath);
+		//printf_s(buf);
 
 		if (poseController.bActive) {
 			vr::VRInputValueHandle_t activeOrigin = poseController.activeOrigin;
 			bool bPoseIsValid = poseController.pose.bPoseIsValid;
 			bool bDeviceIsConnected = poseController.pose.bDeviceIsConnected;
-			printf_s(buf);
-
 
 			// Code below is old ---> 
 			vr::HmdVector3_t position;
@@ -580,8 +482,7 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 				<< osc::EndMessage;
 			transmitSocket.Send(pStream.Data(), pStream.Size());
 
-			sprintf_s(buf, sizeof(buf), "\rTracked Device class-role:(%c) xyz:(% .2f,  % .2f, % .2f) q(% .2f, % .2f, % .2f, % .2f)",
-				'C', position.v[0], position.v[1], position.v[2], quaternion.w, quaternion.x, quaternion.y, quaternion.z);
+			sprintf_s(buf, sizeof(buf), "\rC: (% .2f,  % .2f, % .2f) q(% .2f, % .2f, % .2f, % .2f) --- ",  position.v[0], position.v[1], position.v[2], quaternion.w, quaternion.x, quaternion.y, quaternion.z);
 			printf_s(buf);
 		}
 		else {
@@ -598,14 +499,13 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 	vr::InputPoseActionData_t poseTracker;
 	inputError = vr::VRInput()->GetPoseActionDataRelativeToNow(m_actionDemoTracker, vr::TrackingUniverseStanding, 0, &poseTracker, sizeof(poseTracker), vr::k_ulInvalidInputValueHandle);
 	if (inputError == vr::VRInputError_None) {
-		printf_s(buf);
 
 		if (poseTracker.bActive) {
 			vr::VRInputValueHandle_t activeOrigin = poseTracker.activeOrigin;
 			bool bPoseIsValid = poseTracker.pose.bPoseIsValid;
 			bool bDeviceIsConnected = poseTracker.pose.bDeviceIsConnected;
-			sprintf_s(buf, sizeof(buf), "Tracker --- Origin: %d Validity: %d DeviceIsConnected: %d\n\n", activeOrigin, bPoseIsValid, bDeviceIsConnected);
-			printf_s(buf);
+			//sprintf_s(buf, sizeof(buf), "Tracker --- Origin: %d Validity: %d DeviceIsConnected: %d\n\n", activeOrigin, bPoseIsValid, bDeviceIsConnected);
+			
 
 
 			// Code below is old ---> 
@@ -633,9 +533,8 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 					<< osc::EndMessage;
 			transmitSocket.Send(pStream.Data(), pStream.Size());
 
-			sprintf_s(buf, sizeof(buf), "\rTracked Device class-role:(%c) xyz:(% .2f,  % .2f, % .2f) q(% .2f, % .2f, % .2f, % .2f)",
-					'T', position.v[0], position.v[1], position.v[2], quaternion.w, quaternion.x, quaternion.y, quaternion.z);
-				printf_s(buf);
+			sprintf_s(buf, sizeof(buf), "T: (% .2f,  % .2f, % .2f) q(% .2f, % .2f, % .2f, % .2f)", position.v[0], position.v[1], position.v[2], quaternion.w, quaternion.x, quaternion.y, quaternion.z);
+			printf_s(buf);
 
 		}
 	

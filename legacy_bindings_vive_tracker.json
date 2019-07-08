@@ -16,7 +16,7 @@
       "poses": [
         {
           "output": "/actions/demo/in/Tracker",
-          "path": "/user/hand/left/pose/raw"
+          "path": "/user/foot/left/pose/raw"
         }
       ],
       "sources": [
@@ -179,7 +179,7 @@
       ]
     }
   },
-  "controller_type": "vive_tracker_handed",
+  "controller_type": "vive_tracker_left_foot",
   "description": "",
   "name": "Default bindings for legacy applications for Vive Trackers in Hand",
   "options": {},

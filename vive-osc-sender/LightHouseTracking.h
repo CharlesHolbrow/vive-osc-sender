@@ -20,20 +20,11 @@ private:
 	vr::VRActionSetHandle_t m_actionSetDemo = vr::k_ulInvalidActionSetHandle;
 	const char *actionSetDemoPath = "/actions/demo";
 
-	vr::VRActionHandle_t m_actionAnalogInput = vr::k_ulInvalidActionHandle;
-	const char *actionDemoAnalogInputPath = "/actions/demo/in/AnalogInput";
-
-	vr::VRActionHandle_t m_actionHideCubes = vr::k_ulInvalidActionHandle;
-	const char *actionDemoHideCubesPath = "/actions/demo/in/HideCubes";
-
 	vr::VRActionHandle_t m_actionDemoController = vr::k_ulInvalidActionHandle;
 	const char *actionDemoControllerPath = "/actions/demo/in/Controller";
 
 	vr::VRActionHandle_t m_actionDemoTracker = vr::k_ulInvalidActionHandle;
 	const char *actionDemoTrackerPath = "/actions/demo/in/Tracker";
-
-	vr::VRInputValueHandle_t m_inputHandLeftPath = vr::k_ulInvalidInputValueHandle;
-	const char *inputHandLeftPath = "/user/hand/left";
 
 	struct ControllerInfo_t
 	{
