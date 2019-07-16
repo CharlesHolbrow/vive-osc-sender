@@ -439,8 +439,6 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 	inputError = vr::VRInput()->GetPoseActionDataRelativeToNow(m_actionDemoController, vr::TrackingUniverseStanding, 0, &poseController, sizeof(poseController), vr::k_ulInvalidInputValueHandle);
 
 	if (inputError == vr::VRInputError_None) {
-		//sprintf_s(buf, sizeof(buf), "\n%s | GetPoseActionData() Ok\n", actionDemoControllerPath);
-		//printf_s(buf);
 
 		if (poseController.bActive) {
 			vr::VRInputValueHandle_t activeOrigin = poseController.activeOrigin;
@@ -492,9 +490,6 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			vr::VRInputValueHandle_t activeOrigin = poseTracker.activeOrigin;
 			bool bPoseIsValid = poseTracker.pose.bPoseIsValid;
 			bool bDeviceIsConnected = poseTracker.pose.bDeviceIsConnected;
-			//sprintf_s(buf, sizeof(buf), "Tracker --- Origin: %d Validity: %d DeviceIsConnected: %d\n\n", activeOrigin, bPoseIsValid, bDeviceIsConnected);
-			
-
 
 			// Code below is old ---> 
 			vr::HmdVector3_t position;
@@ -537,104 +532,6 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 		printf_s(buf);
 	}
 }
-
-/*
-
-				// OSC
-				// If we want to send one bundle per frame, we would have to
-				// initialize the variable outside of the device loop. For now
-				// I'm just doing it here instead. Starting a bundle looks like
-				// this: p << osc::BeginBundleImmediate;
-				char buffer[2048];
-				osc::OutboundPacketStream pStream(buffer, 2048);
-
-				switch (eTrackingResult) {
-				case vr::ETrackingResult::TrackingResult_Running_OK:
-					// At this point, we are definitely going to send an osc.
-
-					// Get a char representing device class
-					switch (trackedDeviceClass) {
-					case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller:
-						sprintf_s(oscAddress, sizeof(oscAddress), "/controller/%d", controllerIndex++);
-						pStream << osc::BeginMessage(oscAddress);
-						cClass = 'C';
-						break;
-					case vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker:
-						sprintf_s(oscAddress, sizeof(oscAddress), "/tracker/%d", trackerIndex++);
-						pStream << osc::BeginMessage(oscAddress);
-						cClass = 'T';
-						break;
-					}
-					// Get a char representing the device role
-					switch (role) {
-					case vr::TrackedControllerRole_Invalid:
-						cRole = 'I';
-						break;
-					case vr::TrackedControllerRole_RightHand:
-						cRole = 'R';
-						break;
-					case vr::TrackedControllerRole_LeftHand:
-						cRole = 'L';
-						break;
-					}
-
-					pStream << position.v[0] << position.v[1] << position.v[2] 
-						<< static_cast<float>(quaternion.w) << static_cast<float>(quaternion.x)
-						<< static_cast<float>(quaternion.y) << static_cast<float>(quaternion.z)
-						<< t.x
-						<< osc::EndMessage;
-					transmitSocket.Send(pStream.Data(), pStream.Size());
-
-					sprintf_s(buf, sizeof(buf), "\rTracked Device class-role:(%c-%c) xyz:(% .2f,  % .2f, % .2f) q(% .2f, % .2f, % .2f, % .2f) trigger(% .2f,  % .2f)",
-						cClass, cRole, position.v[0], position.v[1], position.v[2], quaternion.w, quaternion.x, quaternion.y, quaternion.z, t.x, t.y);
-					printf_s(buf);
-					fflush(stdout);
-
-					break;
-				case vr::ETrackingResult::TrackingResult_Uninitialized:
-					sprintf_s(buf, sizeof(buf), "\rInvalid tracking result       ");
-					printf_s(buf);
-					fflush(stdout);
-					break;
-				case vr::ETrackingResult::TrackingResult_Calibrating_InProgress:
-					sprintf_s(buf, sizeof(buf), "\rCalibrating in progress       ");
-					printf_s(buf);
-					fflush(stdout);
-					break;
-				case vr::ETrackingResult::TrackingResult_Calibrating_OutOfRange:
-					sprintf_s(buf, sizeof(buf), "\rCalibrating Out of range      ");
-					printf_s(buf);
-					fflush(stdout);
-					break;
-				case vr::ETrackingResult::TrackingResult_Running_OutOfRange:
-					sprintf_s(buf, sizeof(buf), "\rWARNING: Running Out of Range ");
-					printf_s(buf);
-					fflush(stdout);
-					break;
-				default:
-					sprintf_s(buf, sizeof(buf), "\rUnknown Tracking Result       ");
-					printf_s(buf);
-					fflush(stdout);
-					break;
-				}
-			}
-			break;
-		} // tracked device == controller || generic tracker
-
-		// Lighthouse base station
-		case vr::TrackedDeviceClass_TrackingReference: {
-			break;
-		}
-
-		default: {
-			char buf[1024];
-			sprintf_s(buf, sizeof(buf), "Unsupported class: %d\n", trackedDeviceClass);
-			printf_s(buf);
-			}
-			break;
-		}
-	}
-}*/
 
 void LighthouseTracking::PrintDevices() {
 

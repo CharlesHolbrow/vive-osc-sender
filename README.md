@@ -2,16 +2,18 @@
 
 A modified version of [Omnifinity's OpenVR Tracking Example](https://github.com/Omnifinity/OpenVR-Tracking-Example), for Windows updated to send osc.
 
-Uses OpenVR 1.1.3.
+Uses OpenVR 1.4.18.
 
 Compiled using Visual Studio 2017.
 
-# Deprecated:
-
-##  How do I run it?
-There is an executable in the Binary folder. Unarchive that and run it through a console after you've started Steam VR. Background processes are not allowed to start up SteamVR by themselves. 
+# Settings
 
 If you supply the parameter "--showonlydeviceid <number>" you can choose to show data/events for a specific device. E.g. "--showonlydeviceid 0" would show only data for the HMD.
+
+If you supply the parameter "--port <number>" you can choose which port to send the OSC data to.
+
+If you supply the parameter "--ip <number>" you can choose which ip address to send the OSC data to.
+
 
 ##  How do I compile it?
 1. Make sure that you point your includes and library bin folder to where you have openvr installed on your machine.
@@ -19,15 +21,11 @@ If you supply the parameter "--showonlydeviceid <number>" you can choose to show
 
 ##  How do I use it?
 1. Start up Steam VR
-2. Compile and start the example - it launches as a background application
+2. In order to get data from Vive Tracker, go to SteamVR->Devices->Manage Vive Trackers, and set role to camera
+3. Compile and start the example - it launches as a background application
 
 
 ##  Troubleshooting:
-
-*Unable to init VR runtime: Hmd Not Found (108)*
-
-Solution: Attach the HMD to the computer
-
 
 *Unable to init VR runtime: Not starting vrserver for background app (121)*
 
