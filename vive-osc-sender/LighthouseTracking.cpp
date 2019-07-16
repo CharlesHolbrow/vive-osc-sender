@@ -32,18 +32,6 @@ LighthouseTracking::LighthouseTracking(IpEndpointName ip)
 		exit(EXIT_FAILURE);
 	}
 
-	/*/ Ensure VR Compositor is avail, otherwise getting poses causes a crash (openvr v1.3.22)
-	if (!BInitCompositor()) {
-		//printf("%s - Failed to initialize VR Compositor!\n", __FUNCTION__);
-		sprintf_s(buf, sizeof(buf), "%s - Failed to initialize VR Compositor!", __FUNCTION__);
-		printf_s(buf);
-		exit(EXIT_FAILURE);
-	}
-	else {
-		sprintf_s(buf, sizeof(buf), "Successfully initialized VR Compositor\n");
-		printf_s(buf);
-	}*/
-
 	// Prepare manifest file
 	const char *manifestPath = "C:/projects-charles/vive-osc-sender/vive_debugger_actions.json";
 	vr::EVRInputError inputError = vr::VRInput()->SetActionManifestPath(manifestPath);

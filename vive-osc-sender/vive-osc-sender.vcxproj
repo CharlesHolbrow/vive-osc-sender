@@ -121,7 +121,6 @@ copy /Y "$(TargetPath)" "\\DESKTOP-GH45UK8\Omnifinity\vive_debugger\$(TargetName
     <None Include="..\legacy_bindings_vive_tracker.json" />
     <None Include="..\vive_debugger_actions.json" />
     <None Include="..\vive_debugger_bindings_vive_controller.json" />
-    <None Include="..\vive_tracker_camera_profile.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

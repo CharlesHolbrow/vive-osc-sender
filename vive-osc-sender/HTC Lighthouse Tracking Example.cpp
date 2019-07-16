@@ -22,10 +22,11 @@ using std::string;
 #define SOFTWARE_NAME "vive_debugger"
 #define SOFTWARE_VERSION "1.4"
 #define SOFTWARE_CURRENT_YEAR "2019"
+#define VER_140 "Using openvr 1.4.18"
 #define VER_130 "Using openvr 1.3.22"
 #define VER_120 "Using openvr 1.2.10"
 #define VER_110 "Using openvr 1.1.3"
-#define VER_CURRENT_STRING VER_130
+#define VER_CURRENT_STRING VER_140
 
 
 void printSoftwareVersion() {

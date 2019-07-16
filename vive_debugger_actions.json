@@ -5,19 +5,11 @@
       "binding_url": "vive_debugger_bindings_vive_controller.json"
     },
     {
-      "controller_type": "vive_tracker_left_foot",
+      "controller_type": "vive_tracker_camera",
       "binding_url": "legacy_bindings_vive_tracker.json"
     }
   ],
   "actions": [
-    {
-      "name": "/actions/demo/in/HideCubes",
-      "type": "boolean"
-    },
-    {
-      "name": "/actions/demo/in/AnalogInput",
-      "type": "vector2"
-    },
     {
       "name": "/actions/demo/in/Controller",
       "type": "pose"
