@@ -65,7 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\vive_debugger_actions.json" />
-    <None Include="..\vive_debugger_bindings_vive_controller.json" />
-    <None Include="..\legacy_bindings_vive_tracker.json" />
+    <None Include="..\vive_tracker_bindings.json" />
+    <None Include="..\vive_controller_bindings.json" />
   </ItemGroup>
 </Project>

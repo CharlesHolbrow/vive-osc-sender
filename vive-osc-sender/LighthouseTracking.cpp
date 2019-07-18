@@ -3,10 +3,11 @@
 // By Peter Thor 2016, 2017, 2018, 2019
 //
 // Shows how to extract basic tracking data
-//
 
 #include "stdafx.h"
 #include "LighthouseTracking.h"
+#include <filesystem>
+using namespace std::experimental::filesystem::v1;
 
 // Destructor
 LighthouseTracking::~LighthouseTracking() {
@@ -33,7 +34,8 @@ LighthouseTracking::LighthouseTracking(IpEndpointName ip)
 	}
 
 	// Prepare manifest file
-	const char *manifestPath = "C:/projects-charles/vive-osc-sender/vive_debugger_actions.json";
+	std::string actions ("\\vive_debugger_actions.json");
+	const char *manifestPath = (current_path().u8string() + actions).c_str();
 	vr::EVRInputError inputError = vr::VRInput()->SetActionManifestPath(manifestPath);
 	if (inputError != vr::VRInputError_None) {
 		sprintf_s(buf, sizeof(buf), "Error: Unable to set manifest path: %d\n", inputError);
@@ -434,7 +436,7 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 		printf_s(buf);
 	}
 
-	// get pose data
+	//Handles Pose from Controller
 	vr::InputPoseActionData_t poseController;
 	inputError = vr::VRInput()->GetPoseActionDataRelativeToNow(m_actionDemoController, vr::TrackingUniverseStanding, 0, &poseController, sizeof(poseController), vr::k_ulInvalidInputValueHandle);
 
@@ -445,7 +447,6 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			bool bPoseIsValid = poseController.pose.bPoseIsValid;
 			bool bDeviceIsConnected = poseController.pose.bDeviceIsConnected;
 
-			// Code below is old ---> 
 			vr::HmdVector3_t position;
 			vr::HmdQuaternion_t quaternion;
 
@@ -481,7 +482,7 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 		printf_s(buf);
 	}
 
-
+	//Handles Pose from Tracker
 	vr::InputPoseActionData_t poseTracker;
 	inputError = vr::VRInput()->GetPoseActionDataRelativeToNow(m_actionDemoTracker, vr::TrackingUniverseStanding, 0, &poseTracker, sizeof(poseTracker), vr::k_ulInvalidInputValueHandle);
 	if (inputError == vr::VRInputError_None) {
@@ -491,7 +492,6 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			bool bPoseIsValid = poseTracker.pose.bPoseIsValid;
 			bool bDeviceIsConnected = poseTracker.pose.bDeviceIsConnected;
 
-			// Code below is old ---> 
 			vr::HmdVector3_t position;
 			vr::HmdQuaternion_t quaternion;
 
@@ -641,5 +641,4 @@ void LighthouseTracking::PrintDevices() {
 	}
 	sprintf_s(buf, sizeof(buf), "---------------------------\nEnd of device list\n\n");
 	printf_s(buf);
-
 }

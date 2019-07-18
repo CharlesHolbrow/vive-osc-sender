@@ -26,7 +26,7 @@
         {
           "inputs": {
             "click": {
-              "output": "/actions/demo/in/hidecubes"
+              "output": "/actions/demo/in/trigger"
             }
           },
           "mode": "button",
@@ -37,7 +37,7 @@
   },
   "controller_type": "vive_controller",
   "description": "",
-  "name": "My vive_debugger.exe configuration for Vive Controller",
+  "name": "Bindings for Vive Controller for vive-osc-sender",
   "options": {},
   "simulated_actions": []
 }
