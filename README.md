@@ -2,7 +2,7 @@
 
 A modified version of [Omnifinity's OpenVR Tracking Example](https://github.com/Omnifinity/OpenVR-Tracking-Example), for Windows updated to send osc.
 
-Uses OpenVR 1.4.18.
+Uses OpenVR 1.5.17.
 
 Compiled using Visual Studio 2017.
 
@@ -18,6 +18,10 @@ If you supply the parameter "--ip <number>" you can choose which ip address to s
 ##  How do I compile it?
 1. Make sure that you point your includes and library bin folder to where you have openvr installed on your machine.
 2. Make sure you've got the openvr_api.dll in the same folder as the built example
+
+To start using, clone the repo and recurse the submodules:
+
+$ git clone --recurse-submodules <URL>
 
 ##  How do I use it?
 1. Start up Steam VR
