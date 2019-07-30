@@ -17,6 +17,10 @@
     {
       "name": "/actions/demo/in/Tracker",
       "type": "pose"
+    },
+    {
+      "name": "/actions/demo/in/Trigger",
+      "type": "vector1"
     }
   ],
   "localization": [

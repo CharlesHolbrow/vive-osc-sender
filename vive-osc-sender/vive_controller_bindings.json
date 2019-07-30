@@ -25,11 +25,20 @@
         },
         {
           "inputs": {
-            "click": {
+            "pull": {
               "output": "/actions/demo/in/trigger"
             }
           },
-          "mode": "button",
+          "mode": "trigger",
+          "path": "/user/hand/right/input/trigger"
+        },
+        {
+          "inputs": {
+            "pull": {
+              "output": "/actions/demo/in/value"
+            }
+          },
+          "mode": "trigger",
           "path": "/user/hand/left/input/trigger"
         }
       ]

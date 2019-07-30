@@ -63,9 +63,4 @@
       <Filter>Source Files\oscpack</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\vive_debugger_actions.json" />
-    <None Include="..\vive_tracker_bindings.json" />
-    <None Include="..\vive_controller_bindings.json" />
-  </ItemGroup>
 </Project>

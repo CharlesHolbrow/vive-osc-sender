@@ -26,6 +26,9 @@ private:
 	vr::VRActionHandle_t m_actionDemoTracker = vr::k_ulInvalidActionHandle;
 	const char *actionDemoTrackerPath = "/actions/demo/in/Tracker";
 
+	vr::VRActionHandle_t m_actionDemoTrigger = vr::k_ulInvalidActionHandle;
+	const char *actionDemoTriggerPath = "/actions/demo/in/Trigger";
+
 	struct ControllerInfo_t
 	{
 		vr::VRInputValueHandle_t m_source = vr::k_ulInvalidInputValueHandle;

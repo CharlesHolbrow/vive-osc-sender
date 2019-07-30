@@ -117,11 +117,6 @@ copy /Y "$(TargetPath)" "\\DESKTOP-GH45UK8\Omnifinity\vive_debugger\$(TargetName
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\vive_tracker_bindings.json" />
-    <None Include="..\vive_debugger_actions.json" />
-    <None Include="..\vive_controller_bindings.json" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
