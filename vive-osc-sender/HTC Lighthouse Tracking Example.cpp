@@ -20,9 +20,15 @@ using std::vector;
 using std::string;
 
 #define SOFTWARE_NAME "vive_debugger"
-#define SOFTWARE_VERSION "1.2"
+#define SOFTWARE_VERSION "1.5"
 #define SOFTWARE_CURRENT_YEAR "2019"
+#define VER_150 "Using openvr 1.5.17"
+#define VER_140 "Using openvr 1.4.18"
+#define VER_130 "Using openvr 1.3.22"
+#define VER_120 "Using openvr 1.2.10"
 #define VER_110 "Using openvr 1.1.3"
+#define VER_CURRENT_STRING VER_150
+
 
 void printSoftwareVersion() {
 	char buf[1024];
@@ -36,6 +42,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	int shouldListDevicesAndQuit = 0;
 	int shouldPrintVersionAndQuit = 0;
 	int showOnlyDevice = -1;
+	int calcControllerDeltaPos = 0;
 
 	int port = 9999;
 	char ip_address[15];
@@ -109,8 +116,18 @@ int _tmain(int argc, _TCHAR* argv[])
 					}
 				}
 
+				// calculate the difference
+				if (calcControllerDeltaPos) {
+					vr::HmdVector3_t vecDiff = lighthouseTracking->GetControllerPositionDelta();
+					vr::HmdVector3_t vecLeft = lighthouseTracking->GetLeftControllerPosition();
+					vr::HmdVector3_t vecRight = lighthouseTracking->GetRightControllerPosition();
+					sprintf_s(buf, sizeof(buf), "(lx, ly, lz) = (%.3f, %.3f, %.3f) | (rx, ry, rz) = (%.3f, %.3f, %.3f) | (dX, dY, dZ) = (%.3f, %.3f, %.3f)\n", vecLeft.v[0], vecLeft.v[1], vecLeft.v[2], vecRight.v[0], vecRight.v[1], vecRight.v[2], vecDiff.v[0], vecDiff.v[1], vecDiff.v[2]);
+					//sprintf_s(buf, sizeof(buf), "(lx, ly, lz) = (%.4f, %.4f, %.4f) | (rx, ry, rz) = (%.4f, %.4f, %.4f) | (dX, dY, dZ) = (%.4f, %.4f, %.4f)\n", vecLeft.v[0], vecLeft.v[1], vecLeft.v[2], vecRight.v[0], vecRight.v[1], vecRight.v[2], vecDiff.v[0], vecDiff.v[1], vecDiff.v[2]);
+					printf_s(buf);
+				}
+
 				// a delay to not overheat your computer... :)
-				Sleep(1);
+				Sleep(2);
 			}
 		}
 

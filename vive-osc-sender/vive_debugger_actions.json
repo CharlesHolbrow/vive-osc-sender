@@ -1,0 +1,34 @@
+{
+  "default_bindings": [
+    {
+      "controller_type": "vive_controller",
+      "binding_url": "vive_controller_bindings.json"
+    },
+    {
+      "controller_type": "vive_tracker_camera",
+      "binding_url": "vive_tracker_bindings.json"
+    }
+  ],
+  "actions": [
+    {
+      "name": "/actions/demo/in/Controller",
+      "type": "pose"
+    },
+    {
+      "name": "/actions/demo/in/Tracker",
+      "type": "pose"
+    },
+    {
+      "name": "/actions/demo/in/Trigger",
+      "type": "vector1"
+    }
+  ],
+  "localization": [
+    {
+      "language_tag": "en_US",
+      "/actions/demo/in/AnalogInput": "Analog Input",
+      "/actions/demo/in/Hand_Right": "Right Hand Pose",
+      "/actions/demo/in/Hand_Left": "Left Hand Pose"
+    }
+  ]
+}
