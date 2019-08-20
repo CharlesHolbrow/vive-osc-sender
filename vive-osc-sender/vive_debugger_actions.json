@@ -19,6 +19,10 @@
       "type": "pose"
     },
     {
+      "name": "/actions/demo/in/AnalogInput",
+      "type": "vector2"
+    },
+    {
       "name": "/actions/demo/in/Trigger",
       "type": "vector1"
     }

@@ -79,17 +79,17 @@ LighthouseTracking::LighthouseTracking(IpEndpointName ip)
 		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoTrackerPath, m_actionDemoTracker);
 		printf_s(buf);
 	}
-	/*
+	
 	// handle for analog trackpad action
-	inputError = vr::VRInput()->GetActionHandle(actionDemoAnalogInputPath, &m_actionAnalogInput);
+	inputError = vr::VRInput()->GetActionHandle(actionDemoTrackpadPath, &m_actionDemoTrackpad);
 	if (inputError != vr::VRInputError_None) {
 		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
 		printf_s(buf);
 	}
 	else {
-		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoAnalogInputPath, m_actionAnalogInput);
+		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoTrackpadPath, m_actionDemoTrackpad);
 		printf_s(buf);
-	}*/
+	}
 
 	// handle for a hide cube action
 	inputError = vr::VRInput()->GetActionHandle(actionDemoTriggerPath, &m_actionDemoTrigger);
@@ -484,6 +484,14 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			if (inputError == vr::VRInputError_None && analogData.bActive)
 				trigger = analogData.x;
 
+			//Gets Trackpad Value
+			inputError = vr::VRInput()->GetAnalogActionData(m_actionDemoTrackpad, &analogData, sizeof(analogData), vr::k_ulInvalidInputValueHandle);
+			float trackpad_x = 0;
+			float trackpad_y = 0;
+			if (inputError == vr::VRInputError_None && analogData.bActive)
+				trackpad_x = analogData.x;
+				trackpad_y = analogData.y;
+
 			// OSC
 			// If we want to send one bundle per frame, we would have to
 			// initialize the variable outside of the device loop. For now
@@ -496,10 +504,11 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			pStream << position.v[0] << position.v[1] << position.v[2] 
 				<< static_cast<float>(quaternion.w) << static_cast<float>(quaternion.x)
 				<< static_cast<float>(quaternion.y) << static_cast<float>(quaternion.z)
-				<< trigger << osc::EndMessage;
+				<< trigger << trackpad_x << trackpad_y << osc::EndMessage;
 			transmitSocket.Send(pStream.Data(), pStream.Size());
 
-			sprintf_s(buf, sizeof(buf), "\rC:(% .2f,  % .2f, % .2f) q(% .2f, % .2f, % .2f, % .2f) % .2f - ",  position.v[0], position.v[1], position.v[2], quaternion.w, quaternion.x, quaternion.y, quaternion.z, trigger);
+			//sprintf_s(buf, sizeof(buf), "\rC(% .1f,  % .1f, % .1f) q(% .1f, % .1f, % .1f, % .1f) % .2f % .2f % .2f ",  position.v[0], position.v[1], position.v[2], quaternion.w, quaternion.x, quaternion.y, quaternion.z, trigger, trackpad_x, trackpad_y);
+			sprintf_s(buf, sizeof(buf), "\rC(% .2f,  % .2f, % .2f) q(% .2f, % .2f, % .2f, % .2f) - ",  position.v[0], position.v[1], position.v[2], quaternion.w, quaternion.x, quaternion.y, quaternion.z);
 			printf_s(buf);
 		}
 		else {
@@ -546,7 +555,7 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 					<< osc::EndMessage;
 			transmitSocket.Send(pStream.Data(), pStream.Size());
 
-			sprintf_s(buf, sizeof(buf), "T:(% .2f,  % .2f, % .2f) q(% .2f, % .2f, % .2f, % .2f)", position.v[0], position.v[1], position.v[2], quaternion.w, quaternion.x, quaternion.y, quaternion.z);
+			sprintf_s(buf, sizeof(buf), "T(% .2f,  % .2f, % .2f) q(% .2f, % .2f, % .2f, % .2f)", position.v[0], position.v[1], position.v[2], quaternion.w, quaternion.x, quaternion.y, quaternion.z);
 			printf_s(buf);
 
 		}

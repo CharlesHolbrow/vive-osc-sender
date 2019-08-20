@@ -21,6 +21,15 @@
             }
           },
           "mode": "trackpad",
+          "path": "/user/hand/right/input/trackpad"
+        },
+        {
+          "inputs": {
+            "position": {
+              "output": "/actions/demo/in/analoginput"
+            }
+          },
+          "mode": "trackpad",
           "path": "/user/hand/left/input/trackpad"
         },
         {
