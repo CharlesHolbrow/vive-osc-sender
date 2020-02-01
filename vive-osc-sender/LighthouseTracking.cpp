@@ -119,28 +119,20 @@ LighthouseTracking::LighthouseTracking(IpEndpointName ip)
 * Supply a filterIndex other than -1 to show only info for that device in question. e.g. 0 is always the hmd.
 * Returns true if success or false if openvr has quit
 */
-bool LighthouseTracking::RunProcedure(bool bWaitForEvents, int filterIndex = -1) {
-	// Either A) wait for events, such as hand controller button press, before parsing...
-	if (bWaitForEvents) {
-		// Process VREvent
-		vr::VREvent_t event;
-		while (m_pHMD->PollNextEvent(&event, sizeof(event)))
-		{
-			// Process event
-			if (!ProcessVREvent(event, filterIndex)) {
-				char buf[1024];
-				sprintf_s(buf, sizeof(buf), "(OpenVR) service quit\n");
-				printf_s(buf);
-				return false;
-			}
-			// parse a frame
-			ParseTrackingFrame(filterIndex);
-		}
-	}
-	else {
-		// ... or B) continous parsint of tracking data irrespective of events
-		ParseTrackingFrame(filterIndex);
-	}
+bool LighthouseTracking::RunProcedure(int filterIndex = -1) {
+
+	ParseTrackingFrame(filterIndex);
+
+    vr::VREvent_t event;
+    while (m_pHMD->PollNextEvent(&event, sizeof(event))) {
+        if (!ProcessVREvent(event, filterIndex)) {
+            char buf[1024];
+            sprintf_s(buf, sizeof(buf), "(OpenVR) service quit\n");
+            printf_s(buf);
+            return false;
+        }
+    }
+
 	return true;
 }
 
@@ -300,6 +292,16 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 		}
 		break;
 
+        case (vr::VREvent_Input_HapticVibration): { printf_s("(OpenVR) VREvent_Input_HapticVibration\n"); } break;
+        case (vr::VREvent_Input_BindingLoadFailed): { printf_s("(OpenVR) VREvent_Input_BindingLoadFailed\n"); } break;
+        case (vr::VREvent_Input_BindingLoadSuccessful): { printf_s("(OpenVR) VREvent_Input_BindingLoadSuccessful\n"); } break;
+        case (vr::VREvent_Input_ActionManifestReloaded): { printf_s("(OpenVR) VREvent_Input_ActionManifestReloaded\n"); } break;
+        case (vr::VREvent_Input_ActionManifestLoadFailed): { printf_s("(OpenVR) VREvent_Input_ActionManifestLoadFailed\n"); } break;
+        case (vr::VREvent_Input_ProgressUpdate): { printf_s("(OpenVR) VREvent_Input_ProgressUpdate\n"); } break;
+        case (vr::VREvent_Input_TrackerActivated): { printf_s("(OpenVR) VREvent_Input_TrackerActivated\n"); } break;
+        case (vr::VREvent_Input_BindingsUpdated): { printf_s("(OpenVR) VREvent_Input_BindingsUpdated\n"); } break;
+        case (vr::VREvent_ActionBindingReloaded): { printf_s("(OpenVR) VREvent_ActionBindingReloaded\n"); } break;
+
 		// various events not handled/moved yet into the previous switch chunk.
 		default: {
 			char buf[1024];
@@ -329,7 +331,7 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 				printf_s(buf);
 				break;
 			case vr::EVREventType::VREvent_PropertyChanged:
-				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Property Changed Device: %d\n", event.trackedDeviceIndex);
+				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Property Changed Device: %d ETrackedDeviceProperty(%d)\n", event.trackedDeviceIndex, event.data.property.prop);
 				printf_s(buf);
 				break;
 			case vr::EVREventType::VREvent_SceneApplicationChanged:
@@ -665,8 +667,6 @@ void LighthouseTracking::PrintDevices() {
 
 		}
 
-		int32_t iDeviceClass = vr::VRSystem()->GetInt32TrackedDeviceProperty(unDevice, vr::Prop_DeviceClass_Int32);
-
 		char manufacturer[1024];
 		vr::VRSystem()->GetStringTrackedDeviceProperty(unDevice, vr::ETrackedDeviceProperty::Prop_ManufacturerName_String, manufacturer, sizeof(manufacturer));
 
@@ -676,7 +676,7 @@ void LighthouseTracking::PrintDevices() {
 		char serialnumber[1024];
 		vr::VRSystem()->GetStringTrackedDeviceProperty(unDevice, vr::ETrackedDeviceProperty::Prop_SerialNumber_String, serialnumber, sizeof(serialnumber));
 
-		sprintf_s(buf, sizeof(buf), " %s - %s [%s] class(%d)\n", manufacturer, modelnumber, serialnumber, iDeviceClass);
+		sprintf_s(buf, sizeof(buf), " %s - %s [%s] class(%d)\n", manufacturer, modelnumber, serialnumber, trackedDeviceClass);
 		printf_s(buf);
 	}
 	sprintf_s(buf, sizeof(buf), "---------------------------\nEnd of device list\n\n");

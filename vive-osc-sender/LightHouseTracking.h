@@ -77,7 +77,7 @@ public:
 	LighthouseTracking(IpEndpointName ip);
 
 	// Main loop that listens for openvr events and calls process and parse routines, if false the service has quit
-	bool RunProcedure(bool bWaitForEvents, int filterIndex);
+	bool RunProcedure(int filterIndex);
 
 	// Process a VR event and print some general info of what happens
 	bool ProcessVREvent(const vr::VREvent_t & event, int filterIndex);
