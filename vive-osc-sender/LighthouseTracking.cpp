@@ -34,9 +34,10 @@ LighthouseTracking::LighthouseTracking(IpEndpointName ip)
 	}
 
 	// Prepare manifest file
-
 	std::string actions ("\\vive_debugger_actions.json");
-	const char *manifestPath = (current_path().u8string() + actions).c_str();
+    auto currentPath = current_path().string();
+    auto manifestPathStr = currentPath + actions;
+	const char *manifestPath = manifestPathStr.c_str();
 	vr::EVRInputError inputError = vr::VRInput()->SetActionManifestPath(manifestPath);
 	if (inputError != vr::VRInputError_None) {
 		sprintf_s(buf, sizeof(buf), "Error: Unable to set manifest path: %d\n", manifestPath);
