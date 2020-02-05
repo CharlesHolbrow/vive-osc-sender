@@ -201,69 +201,35 @@ void LighthouseTracking::PrintDevices() {
 
 		// Get what type of device it is and work with its data
 		vr::ETrackedDeviceClass trackedDeviceClass = vr::VRSystem()->GetTrackedDeviceClass(unDevice);
-		switch (trackedDeviceClass) {
-		case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
-			// print stuff for the HMD here, see controller stuff in next case block
-			printf_s("Device %d: [HMD]", unDevice);
-			break;
+        switch (trackedDeviceClass) {
+        case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD: { printf_s("Device %d: [HMD]", unDevice); } break;
+        case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller: {
+            switch (vr::VRSystem()->GetControllerRoleForTrackedDeviceIndex(unDevice)) {
+            case vr::TrackedControllerRole_Invalid: printf_s("Device %d: [Invalid Controller]", unDevice); break;
+            case vr::TrackedControllerRole_LeftHand: printf_s("Device %d: [Controller - Left]", unDevice); break;
+            case vr::TrackedControllerRole_RightHand: printf_s("Device %d: [Controller - Right]", unDevice); break;
+            case vr::TrackedControllerRole_Treadmill: printf_s("Device %d: [Treadmill]", unDevice); break;
+            } break;
+        } break; // Controller
 
-		case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller:
-			// Simliar to the HMD case block above, please adapt as you like
-			// to get away with code duplication and general confusion
-
-			switch (vr::VRSystem()->GetControllerRoleForTrackedDeviceIndex(unDevice)) {
-			case vr::TrackedControllerRole_Invalid:
-				// invalid hand...
-				printf_s("Device %d: [Invalid Controller]", unDevice);
-				break;
-
-			case vr::TrackedControllerRole_LeftHand:
-				printf_s("Device %d: [Controller - Left]", unDevice);
-				break;
-
-			case vr::TrackedControllerRole_RightHand:
-				printf_s("Device %d: [Controller - Right]", unDevice);
-				break;
-
-			case vr::TrackedControllerRole_Treadmill:
-				printf_s("Device %d: [Treadmill]", unDevice);
-				break;
-			}
-			break;
-
-		case vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker:
-			// print stuff for the HMD here, see controller stuff in next case block
-			printf_s("Device %d: [GenericTracker]", unDevice);
-			break;
-
-		case vr::ETrackedDeviceClass::TrackedDeviceClass_TrackingReference:
-			// print stuff for the HMD here, see controller stuff in next case block
-			printf_s("Device %d: [TrackingReference]", unDevice);
-			break;
-
-		case vr::ETrackedDeviceClass::TrackedDeviceClass_DisplayRedirect:
-			// print stuff for the HMD here, see controller stuff in next case block
-			printf_s("Device %d: [DisplayRedirect]", unDevice);
-			break;
-
-		case vr::ETrackedDeviceClass::TrackedDeviceClass_Invalid:
-			// print stuff for the HMD here, see controller stuff in next case block
-			printf_s("Device %d: [Invalid]", unDevice);
-			break;
+        case vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker: { printf_s("Device %d: [GenericTracker]", unDevice); } break;
+        case vr::ETrackedDeviceClass::TrackedDeviceClass_TrackingReference: { printf_s("Device %d: [TrackingReference]", unDevice); } break;
+        case vr::ETrackedDeviceClass::TrackedDeviceClass_DisplayRedirect: { printf_s("Device %d: [DisplayRedirect]", unDevice); } break;
+        case vr::ETrackedDeviceClass::TrackedDeviceClass_Invalid: { printf_s("Device %d: [Invalid]", unDevice); } break;
 		}
 
-		char manufacturer[1024];
+		char manufacturer[64];
 		vr::VRSystem()->GetStringTrackedDeviceProperty(unDevice, vr::ETrackedDeviceProperty::Prop_ManufacturerName_String, manufacturer, sizeof(manufacturer));
 
-		char modelnumber[1024];
+		char modelnumber[64];
 		vr::VRSystem()->GetStringTrackedDeviceProperty(unDevice, vr::ETrackedDeviceProperty::Prop_ModelNumber_String, modelnumber, sizeof(modelnumber));
 
-		char serialnumber[1024];
+		char serialnumber[64];
 		vr::VRSystem()->GetStringTrackedDeviceProperty(unDevice, vr::ETrackedDeviceProperty::Prop_SerialNumber_String, serialnumber, sizeof(serialnumber));
 
 		printf_s(" %s - %s [%s] class(%d)\n", manufacturer, modelnumber, serialnumber, trackedDeviceClass);
 
-        // If the device is a controller, print out any axis it has
+        // If the device is a controller, print each axis type
         if (trackedDeviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
             for (int j = 0; j < vr::k_unControllerStateAxisCount; j++) {
                 auto axis = static_cast<vr::ETrackedDeviceProperty>(j + vr::Prop_Axis0Type_Int32);
