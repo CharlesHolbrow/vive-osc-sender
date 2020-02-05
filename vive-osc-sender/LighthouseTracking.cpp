@@ -185,9 +185,7 @@ void LighthouseTracking::ParseTrackingFrame() {
 
 void LighthouseTracking::PrintDevices() {
 
-	char buf[1024];
-	sprintf_s(buf, sizeof(buf), "\nDevice list:\n---------------------------\n");
-	printf_s(buf);
+	printf_s("\nDevice list:\n---------------------------\n");
 
 	// Process SteamVR device states
 	for (vr::TrackedDeviceIndex_t unDevice = 0; unDevice < vr::k_unMaxTrackedDeviceCount; unDevice++)
@@ -206,70 +204,52 @@ void LighthouseTracking::PrintDevices() {
 		switch (trackedDeviceClass) {
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
 			// print stuff for the HMD here, see controller stuff in next case block
-
-			char buf[2048];
-			sprintf_s(buf, sizeof(buf), "Device %d: [HMD]", unDevice);
-			printf_s(buf);
+			printf_s("Device %d: [HMD]", unDevice);
 			break;
 
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller:
 			// Simliar to the HMD case block above, please adapt as you like
 			// to get away with code duplication and general confusion
 
-			//char buf[1024];
 			switch (vr::VRSystem()->GetControllerRoleForTrackedDeviceIndex(unDevice)) {
 			case vr::TrackedControllerRole_Invalid:
 				// invalid hand...
-
-				sprintf_s(buf, sizeof(buf), "Device %d: [Invalid Controller]", unDevice);
-				printf_s(buf);
+				printf_s("Device %d: [Invalid Controller]", unDevice);
 				break;
 
 			case vr::TrackedControllerRole_LeftHand:
-				sprintf_s(buf, sizeof(buf), "Device %d: [Controller - Left]", unDevice);
-				printf_s(buf);
+				printf_s("Device %d: [Controller - Left]", unDevice);
 				break;
 
 			case vr::TrackedControllerRole_RightHand:
-				sprintf_s(buf, sizeof(buf), "Device %d: [Controller - Right]", unDevice);
-				printf_s(buf);
+				printf_s("Device %d: [Controller - Right]", unDevice);
 				break;
 
 			case vr::TrackedControllerRole_Treadmill:
-				sprintf_s(buf, sizeof(buf), "Device %d: [Treadmill]", unDevice);
-				printf_s(buf);
+				printf_s("Device %d: [Treadmill]", unDevice);
 				break;
 			}
 			break;
 
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker:
 			// print stuff for the HMD here, see controller stuff in next case block
-
-			sprintf_s(buf, sizeof(buf), "Device %d: [GenericTracker]", unDevice);
-			printf_s(buf);
+			printf_s("Device %d: [GenericTracker]", unDevice);
 			break;
 
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_TrackingReference:
 			// print stuff for the HMD here, see controller stuff in next case block
-
-			sprintf_s(buf, sizeof(buf), "Device %d: [TrackingReference]", unDevice);
-			printf_s(buf);
+			printf_s("Device %d: [TrackingReference]", unDevice);
 			break;
 
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_DisplayRedirect:
 			// print stuff for the HMD here, see controller stuff in next case block
-
-			sprintf_s(buf, sizeof(buf), "Device %d: [DisplayRedirect]", unDevice);
-			printf_s(buf);
+			printf_s("Device %d: [DisplayRedirect]", unDevice);
 			break;
 
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_Invalid:
 			// print stuff for the HMD here, see controller stuff in next case block
-
-			sprintf_s(buf, sizeof(buf), "Device %d: [Invalid]", unDevice);
-			printf_s(buf);
+			printf_s("Device %d: [Invalid]", unDevice);
 			break;
-
 		}
 
 		char manufacturer[1024];
@@ -281,8 +261,7 @@ void LighthouseTracking::PrintDevices() {
 		char serialnumber[1024];
 		vr::VRSystem()->GetStringTrackedDeviceProperty(unDevice, vr::ETrackedDeviceProperty::Prop_SerialNumber_String, serialnumber, sizeof(serialnumber));
 
-		sprintf_s(buf, sizeof(buf), " %s - %s [%s] class(%d)\n", manufacturer, modelnumber, serialnumber, trackedDeviceClass);
-		printf_s(buf);
+		printf_s(" %s - %s [%s] class(%d)\n", manufacturer, modelnumber, serialnumber, trackedDeviceClass);
 
         // If the device is a controller, print out any axis it has
         if (trackedDeviceClass == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller) {
@@ -293,17 +272,14 @@ void LighthouseTracking::PrintDevices() {
                     vr::VRSystem()->GetInt32TrackedDeviceProperty(unDevice, axis, &error)
                     );
                 if (!error) {
-                    sprintf_s(buf, sizeof(buf), "\taxis: %d - type: %d (%s) \n", j, enumAxis, vr::VRSystem()->GetControllerAxisTypeNameFromEnum(enumAxis));
-                    printf_s(buf);
+                    printf_s("\taxis: %d - type: %d (%s) \n", j, enumAxis, vr::VRSystem()->GetControllerAxisTypeNameFromEnum(enumAxis));
                 }
 
             }
         }
 	}
-	sprintf_s(buf, sizeof(buf), "---------------------------\n\n");
-	printf_s(buf);
+	printf_s("---------------------------\n\n");
 }
-
 
 
 //-----------------------------------------------------------------------------
@@ -319,223 +295,77 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
     // print stuff for various events (this is not a complete list). Add/remove upon your own desire...
     switch (event.eventType)
     {
-    case vr::VREvent_TrackedDeviceActivated:
-    {
-        //SetupRenderModelForTrackedDevice(event.trackedDeviceIndex);
-        char buf[1024];
-        sprintf_s(buf, sizeof(buf), "(OpenVR) Device : %d attached\n", event.trackedDeviceIndex);
-        printf_s(buf);
-    }
-    break;
-
-    case vr::VREvent_TrackedDeviceDeactivated:
-    {
-        char buf[1024];
-        sprintf_s(buf, sizeof(buf), "(OpenVR) Device : %d detached\n", event.trackedDeviceIndex);
-        printf_s(buf);
-    }
-    break;
-
-    case vr::VREvent_TrackedDeviceUpdated:
-    {
-        char buf[1024];
-        sprintf_s(buf, sizeof(buf), "(OpenVR) Device : %d updated\n", event.trackedDeviceIndex);
-        printf_s(buf);
-    }
-    break;
-
-    case (vr::VREvent_DashboardActivated):
-    {
-        char buf[1024];
-        sprintf_s(buf, sizeof(buf), "(OpenVR) Dashboard activated\n");
-        printf_s(buf);
-    }
-    break;
-
-    case (vr::VREvent_DashboardDeactivated):
-    {
-        char buf[1024];
-        sprintf_s(buf, sizeof(buf), "(OpenVR) Dashboard deactivated\n");
-        printf_s(buf);
-
-    }
-    break;
-
-    case (vr::VREvent_ChaperoneDataHasChanged):
-    {
-        char buf[1024];
-        sprintf_s(buf, sizeof(buf), "(OpenVR) Chaperone data has changed\n");
-        printf_s(buf);
-
-    }
-    break;
-
-    case (vr::VREvent_ChaperoneSettingsHaveChanged):
-    {
-        char buf[1024];
-        sprintf_s(buf, sizeof(buf), "(OpenVR) Chaperone settings have changed\n");
-        printf_s(buf);
-    }
-    break;
-
-    case (vr::VREvent_ChaperoneUniverseHasChanged):
-    {
-        char buf[1024];
-        sprintf_s(buf, sizeof(buf), "(OpenVR) Chaperone universe has changed\n");
-        printf_s(buf);
-
-    }
-    break;
-
-    case (vr::VREvent_ApplicationTransitionStarted):
-    {
-        char buf[1024];
-        sprintf_s(buf, sizeof(buf), "(OpenVR) Application Transition: Transition has started\n");
-        printf_s(buf);
-
-    }
-    break;
-
-    case (vr::VREvent_ApplicationTransitionNewAppStarted):
-    {
-        char buf[1024];
-        sprintf_s(buf, sizeof(buf), "(OpenVR) Application transition: New app has started\n");
-        printf_s(buf);
-
-    }
-    break;
-
-    case (vr::VREvent_Quit):
-    {
-        char buf[1024];
-        sprintf_s(buf, sizeof(buf), "(OpenVR) Received SteamVR Quit (%d)\n", vr::VREvent_Quit);
-        printf_s(buf);
-
-        return false;
-    }
-    break;
-
-    case (vr::VREvent_ProcessQuit):
-    {
-        char buf[1024];
-        sprintf_s(buf, sizeof(buf), "(OpenVR) SteamVR Quit Process (%d)\n", vr::VREvent_ProcessQuit);
-        printf_s(buf);
-
-        return false;
-    }
-    break;
-
-    case (vr::VREvent_QuitAborted_UserPrompt):
-    {
-        char buf[1024];
-        sprintf_s(buf, sizeof(buf), "(OpenVR) SteamVR Quit Aborted UserPrompt (%d)\n", vr::VREvent_QuitAborted_UserPrompt);
-        printf_s(buf);
-
-        return false;
-    }
-    break;
-
-    case (vr::VREvent_QuitAcknowledged):
-    {
-        char buf[1024];
-        sprintf_s(buf, sizeof(buf), "(OpenVR) SteamVR Quit Acknowledged (%d)\n", vr::VREvent_QuitAcknowledged);
-        printf_s(buf);
-
-        return false;
-    }
-    break;
-
-    case (vr::VREvent_TrackedDeviceRoleChanged):
-    {
-
-        char buf[1024];
-        sprintf_s(buf, sizeof(buf), "(OpenVR) TrackedDeviceRoleChanged: %d\n", event.trackedDeviceIndex);
-        printf_s(buf);
-    }
-    break;
-
-    case (vr::VREvent_TrackedDeviceUserInteractionStarted):
-    {
-        char buf[1024];
-        sprintf_s(buf, sizeof(buf), "(OpenVR) TrackedDeviceUserInteractionStarted: %d\n", event.trackedDeviceIndex);
-        printf_s(buf);
-    }
-    break;
-
-    case (vr::VREvent_Input_HapticVibration): { printf_s("(OpenVR) VREvent_Input_HapticVibration\n"); } break;
-    case (vr::VREvent_Input_BindingLoadFailed): { printf_s("(OpenVR) VREvent_Input_BindingLoadFailed\n"); } break;
-    case (vr::VREvent_Input_BindingLoadSuccessful): { printf_s("(OpenVR) VREvent_Input_BindingLoadSuccessful\n"); } break;
-    case (vr::VREvent_Input_ActionManifestReloaded): { printf_s("(OpenVR) VREvent_Input_ActionManifestReloaded\n"); } break;
-    case (vr::VREvent_Input_ActionManifestLoadFailed): { printf_s("(OpenVR) VREvent_Input_ActionManifestLoadFailed\n"); } break;
-    case (vr::VREvent_Input_ProgressUpdate): { printf_s("(OpenVR) VREvent_Input_ProgressUpdate\n"); } break;
-    case (vr::VREvent_Input_TrackerActivated): { printf_s("(OpenVR) VREvent_Input_TrackerActivated\n"); } break;
-    case (vr::VREvent_Input_BindingsUpdated): { printf_s("(OpenVR) VREvent_Input_BindingsUpdated\n"); } break;
-    case (vr::VREvent_ActionBindingReloaded): { printf_s("(OpenVR) VREvent_ActionBindingReloaded\n"); } break;
-
-        // various events not handled/moved yet into the previous switch chunk.
-    default: {
-        char buf[1024];
-        switch (event.eventType) {
-        case vr::EVREventType::VREvent_ButtonTouch:
-            sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Touch Device: %d\n", event.trackedDeviceIndex);
-            printf_s(buf);
-            break;
-        case vr::EVREventType::VREvent_ButtonUntouch:
-            sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Untouch Device: %d\n", event.trackedDeviceIndex);
-            printf_s(buf);
-            break;
-        case vr::EVREventType::VREvent_ButtonPress:
-            sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Press Device: %d\n", event.trackedDeviceIndex);
-            printf_s(buf);
-            break;
-        case vr::EVREventType::VREvent_ButtonUnpress:
-            sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Release Device: %d\n", event.trackedDeviceIndex);
-            printf_s(buf);
-            break;
-        case vr::EVREventType::VREvent_EnterStandbyMode:
-            sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Enter StandbyMode: %d\n", event.trackedDeviceIndex);
-            printf_s(buf);
-            break;
-        case vr::EVREventType::VREvent_LeaveStandbyMode:
-            sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Leave StandbyMode: %d\n", event.trackedDeviceIndex);
-            printf_s(buf);
-            break;
-        case vr::EVREventType::VREvent_PropertyChanged:
-            sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Property Changed Device: %d ETrackedDeviceProperty(%d)\n", event.trackedDeviceIndex, event.data.property.prop);
-            printf_s(buf);
-            break;
-        case vr::EVREventType::VREvent_SceneApplicationChanged:
-            sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Scene Application Changed\n");
-            printf_s(buf);
-            break;
-        case vr::EVREventType::VREvent_SceneFocusChanged:
-            sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Scene Focus Changed\n");
-            printf_s(buf);
-            break;
-        case vr::EVREventType::VREvent_TrackedDeviceUserInteractionStarted:
-            sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Tracked Device User Interaction Started Device: %d\n", event.trackedDeviceIndex);
-            printf_s(buf);
-            break;
-        case vr::EVREventType::VREvent_TrackedDeviceUserInteractionEnded:
-            sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Tracked Device User Interaction Ended Device: %d\n", event.trackedDeviceIndex);
-            printf_s(buf);
-            break;
-        case vr::EVREventType::VREvent_ProcessDisconnected:
-            sprintf_s(buf, sizeof(buf), "(OpenVR) Event: A process was disconnected\n");
-            printf_s(buf);
-            break;
-        case vr::EVREventType::VREvent_ProcessConnected:
-            sprintf_s(buf, sizeof(buf), "(OpenVR) Event: A process was connected\n");
-            printf_s(buf);
-            break;
-
-        default:
-            sprintf_s(buf, sizeof(buf), "(OpenVR) Unmanaged Event: %d Device: %d\n", event.eventType, event.trackedDeviceIndex);
-            printf_s(buf);
-            break;
+    case vr::VREvent_TrackedDeviceActivated: { printf_s("(OpenVR) Device : %d attached\n", event.trackedDeviceIndex); } break;
+    case vr::VREvent_TrackedDeviceDeactivated: { printf_s("(OpenVR) Device : %d detached\n", event.trackedDeviceIndex); } break;
+    case vr::VREvent_TrackedDeviceUpdated: { printf_s("(OpenVR) Device : %d updated\n", event.trackedDeviceIndex); } break;
+    case vr::VREvent_DashboardActivated: { printf_s("(OpenVR) Dashboard activated\n"); } break;
+    case vr::VREvent_DashboardDeactivated: { printf_s("(OpenVR) Dashboard deactivated\n"); } break;
+    case vr::VREvent_ChaperoneDataHasChanged: { printf_s("(OpenVR) Chaperone data has changed\n"); } break;
+    case vr::VREvent_ChaperoneSettingsHaveChanged: { printf_s("(OpenVR) Chaperone settings have changed\n"); } break;
+    case vr::VREvent_ChaperoneUniverseHasChanged: { printf_s("(OpenVR) Chaperone universe has changed\n"); } break;
+    case vr::VREvent_ApplicationTransitionStarted: { printf_s("(OpenVR) Application Transition: Transition has started\n"); } break;
+    case vr::VREvent_ApplicationTransitionNewAppStarted: { printf_s("(OpenVR) Application transition: New app has started\n"); } break;
+    case vr::VREvent_TrackedDeviceRoleChanged: { printf_s("(OpenVR) TrackedDeviceRoleChanged: %d\n", event.trackedDeviceIndex); } break;
+    case vr::VREvent_Input_HapticVibration: { printf_s("(OpenVR) VREvent_Input_HapticVibration\n"); } break;
+    case vr::VREvent_Input_BindingLoadFailed: { printf_s("(OpenVR) VREvent_Input_BindingLoadFailed\n"); } break;
+    case vr::VREvent_Input_BindingLoadSuccessful: { printf_s("(OpenVR) VREvent_Input_BindingLoadSuccessful\n"); } break;
+    case vr::VREvent_Input_ActionManifestReloaded: { printf_s("(OpenVR) VREvent_Input_ActionManifestReloaded\n"); } break;
+    case vr::VREvent_Input_ActionManifestLoadFailed: { printf_s("(OpenVR) VREvent_Input_ActionManifestLoadFailed\n"); } break;
+    case vr::VREvent_Input_ProgressUpdate: { printf_s("(OpenVR) VREvent_Input_ProgressUpdate\n"); } break;
+    case vr::VREvent_Input_TrackerActivated: { printf_s("(OpenVR) VREvent_Input_TrackerActivated\n"); } break;
+    case vr::VREvent_Input_BindingsUpdated: { printf_s("(OpenVR) VREvent_Input_BindingsUpdated\n"); } break;
+    case vr::VREvent_ActionBindingReloaded: { printf_s("(OpenVR) VREvent_ActionBindingReloaded\n"); } break;
+    case vr::VREvent_ChaperoneFlushCache: { printf_s("(OpenVR) VREvent_ChaperoneFlushCache\n"); } break;
+    case vr::VREvent_ButtonTouch: { printf_s("(OpenVR) Event: Touch Device: %d\n", event.trackedDeviceIndex); } break;
+    case vr::VREvent_ButtonUntouch: { printf_s("(OpenVR) Event: Untouch Device: %d\n", event.trackedDeviceIndex); } break;
+    case vr::VREvent_ButtonPress: { printf_s("(OpenVR) Event: Press Device: %d\n", event.trackedDeviceIndex); } break;
+    case vr::VREvent_ButtonUnpress: { printf_s("(OpenVR) Event: Release Device: %d\n", event.trackedDeviceIndex); } break;
+    case vr::VREvent_EnterStandbyMode: { printf_s("(OpenVR) Event: Enter StandbyMode: %d\n", event.trackedDeviceIndex); } break;
+    case vr::VREvent_LeaveStandbyMode: { printf_s("(OpenVR) Event: Leave StandbyMode: %d\n", event.trackedDeviceIndex); } break;
+    case vr::VREvent_PropertyChanged: { printf_s("(OpenVR) Event: Property Changed Device: %d ETrackedDeviceProperty(%d)\n", event.trackedDeviceIndex, event.data.property.prop); } break;
+    case vr::VREvent_SceneApplicationChanged: { printf_s("(OpenVR) Event: Scene Application Changed\n"); } break;
+    case vr::VREvent_SceneFocusChanged: { printf_s("(OpenVR) Event: Scene Focus Changed\n"); } break;
+    case vr::VREvent_TrackedDeviceUserInteractionStarted: { printf_s("(OpenVR) Event: Tracked Device User Interaction Started Device: %d\n", event.trackedDeviceIndex); } break;
+    case vr::VREvent_TrackedDeviceUserInteractionEnded: { printf_s("(OpenVR) Event: Tracked Device User Interaction Ended Device: %d\n", event.trackedDeviceIndex); } break;
+    case vr::VREvent_ProcessDisconnected: { printf_s("(OpenVR) Event: A process was disconnected\n"); } break;
+    case vr::VREvent_ProcessConnected: { printf_s("(OpenVR) Event: A process was connected\n"); } break;
+    case (vr::VREvent_StatusUpdate): {
+        char* status = "unkown";
+        switch (event.data.status.statusState) {
+        case(vr::EVRState::VRState_NotReady): { status = "not Ready"; } break;
+        case(vr::EVRState::VRState_Off): { status = "off"; } break;
+        case(vr::EVRState::VRState_Ready): { status = "ready"; } break;
+        case(vr::EVRState::VRState_Ready_Alert): { status = "ready alert"; } break;
+        case(vr::EVRState::VRState_Ready_Alert_Low): { status = "ready alert low"; } break;
+        case(vr::EVRState::VRState_Searching): { status = "searching"; } break;
+        case(vr::EVRState::VRState_Searching_Alert): { status = "searching alert"; } break;
+        case(vr::EVRState::VRState_Standby): { status = "standby"; } break;
+        case(vr::EVRState::VRState_Undefined): { status = "undefined"; } break;
         }
-    }
-             break;
+        printf_s("(OpenVR) Device %d status: %s\n", event.trackedDeviceIndex, status);
+    } break;
+
+    case (vr::VREvent_Quit): {
+        printf_s("(OpenVR) Received SteamVR Quit (%d)\n", vr::VREvent_Quit);
+        return false;
+    } break;
+
+    case (vr::VREvent_ProcessQuit): {
+        printf_s("(OpenVR) SteamVR Quit Process (%d)\n", vr::VREvent_ProcessQuit);
+        return false;
+    } break;
+
+    case (vr::VREvent_QuitAborted_UserPrompt): {
+        printf_s("(OpenVR) SteamVR Quit Aborted UserPrompt (%d)\n", vr::VREvent_QuitAborted_UserPrompt);
+        return false;
+    } break;
+
+    case (vr::VREvent_QuitAcknowledged): {
+        printf_s("(OpenVR) SteamVR Quit Acknowledged (%d)\n", vr::VREvent_QuitAcknowledged);
+        return false;
+    } break;
+ 
+    default: { printf_s("(OpenVR) Unmanaged Event: %d Device: %d\n", event.eventType, event.trackedDeviceIndex); } break;
     }
 
     return true;
