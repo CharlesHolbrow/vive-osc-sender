@@ -349,30 +349,3 @@ vr::HmdVector3_t LighthouseTracking::GetPosition(vr::HmdMatrix34_t matrix) {
     return vector;
 }
 
-void LighthouseTracking::StoreLeftControllerPosition(vr::HmdVector3_t vector) {
-    m_vecLeftController.v[0] = vector.v[0];
-    m_vecLeftController.v[1] = vector.v[1];
-    m_vecLeftController.v[2] = vector.v[2];
-}
-void LighthouseTracking::StoreRightControllerPosition(vr::HmdVector3_t vector) {
-    m_vecRightController.v[0] = vector.v[0];
-    m_vecRightController.v[1] = vector.v[1];
-    m_vecRightController.v[2] = vector.v[2];
-}
-
-vr::HmdVector3_t LighthouseTracking::GetLeftControllerPosition() {
-    return m_vecLeftController;
-}
-
-vr::HmdVector3_t LighthouseTracking::GetRightControllerPosition() {
-    return m_vecRightController;
-}
-
-
-vr::HmdVector3_t LighthouseTracking::GetControllerPositionDelta() {
-    vr::HmdVector3_t vecDiff;
-    vecDiff.v[0] = m_vecLeftController.v[0] - m_vecRightController.v[0];
-    vecDiff.v[1] = m_vecLeftController.v[1] - m_vecRightController.v[1];
-    vecDiff.v[2] = m_vecLeftController.v[2] - m_vecRightController.v[2];
-    return vecDiff;
-}
