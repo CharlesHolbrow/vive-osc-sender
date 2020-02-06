@@ -203,7 +203,7 @@ void LighthouseTracking::PrintDevices() {
             case vr::TrackedControllerRole_RightHand: printf_s("Device %d: [Controller - Right]", unDevice); break;
             case vr::TrackedControllerRole_Treadmill: printf_s("Device %d: [Treadmill]", unDevice); break;
             } break;
-        } break; // Controller
+        } break; // TrackedDeviceClass_Controller
 
         case vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker: { printf_s("Device %d: [GenericTracker]", unDevice); } break;
         case vr::ETrackedDeviceClass::TrackedDeviceClass_TrackingReference: { printf_s("Device %d: [TrackingReference]", unDevice); } break;

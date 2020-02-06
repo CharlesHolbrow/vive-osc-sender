@@ -98,7 +98,7 @@ copy /Y "$(TargetPath)" "\\DESKTOP-GH45UK8\Omnifinity\vive_debugger\$(TargetName
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="LightHouseTracking.h" />
+    <ClInclude Include="LighthouseTracking.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
