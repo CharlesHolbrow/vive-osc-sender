@@ -48,14 +48,14 @@ LighthouseTracking::LighthouseTracking(IpEndpointName ip)
 * Supply a filterIndex other than -1 to show only info for that device in question. e.g. 0 is always the hmd.
 * Returns true if success or false if openvr has quit
 */
-bool LighthouseTracking::RunProcedure(int filterIndex = -1) {
+bool LighthouseTracking::RunProcedure() {
 
 	//ParseTrackingFrame(filterIndex);
     ParseTrackingFrame();
 
     vr::VREvent_t event;
     while (m_pHMD->PollNextEvent(&event, sizeof(event))) {
-        if (!ProcessVREvent(event, filterIndex)) {
+        if (!ProcessVREvent(event)) {
             char buf[1024];
             sprintf_s(buf, sizeof(buf), "(OpenVR) service quit\n");
             printf_s(buf);
@@ -252,13 +252,7 @@ void LighthouseTracking::PrintDevices() {
 // Purpose: Processes a single VR event
 //-----------------------------------------------------------------------------
 
-bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterOutIndex = -1) {
-    // if user supplied a device filter index only show events for that device
-    if (filterOutIndex != -1)
-        if (event.trackedDeviceIndex == filterOutIndex)
-            return true;
-
-    // print stuff for various events (this is not a complete list). Add/remove upon your own desire...
+bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event) {
     switch (event.eventType)
     {
     case vr::VREvent_TrackedDeviceActivated: { printf_s("(OpenVR) Device : %d attached\n", event.trackedDeviceIndex); } break;

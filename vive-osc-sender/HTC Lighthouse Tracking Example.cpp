@@ -40,12 +40,10 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	bool parseTrackingData = true;
 	int shouldListDevicesAndQuit = 0;
-	int shouldPrintVersionAndQuit = 0;
-	int showOnlyDevice = -1;
 	int calcControllerDeltaPos = 0;
 
 	int port = 9999;
-	char ip_address[15];
+	char ip_address[128];
 	sprintf_s(ip_address, sizeof(ip_address), "127.0.0.1");
 
 	char buf[1024];
@@ -60,25 +58,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		const std::string myArg(argv[i]);
 
 		if (myArg == std::string("--listdevices")) shouldListDevicesAndQuit = atoi(argv[i + 1]);
-		if (myArg == std::string("--showonlydeviceid")) showOnlyDevice = atoi(argv[i + 1]);
-		if (myArg == std::string("--v")) shouldPrintVersionAndQuit = 1;
 		if (myArg == std::string("--ip")) sprintf_s(ip_address, sizeof(ip_address), argv[i + 1]);
 		if (myArg == std::string("--port")) port = atoi(argv[i + 1]);
 
 		validArgs.push_back(myArg);
 	}
 
-	if (shouldPrintVersionAndQuit) {
-		printSoftwareVersion();
-		return EXIT_SUCCESS;
-	}
 	printSoftwareVersion();
-
-	// Hack to override the command line arg
-	//showOnlyDevice = 5;
-
-	sprintf_s(buf, sizeof(buf), "Showing data for device: %d\n", showOnlyDevice);
-	printf_s(buf);
 
 	// Create a new LighthouseTracking instance and parse as needed
 	LighthouseTracking *lighthouseTracking = new LighthouseTracking(IpEndpointName(ip_address, port));
@@ -95,7 +81,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			Sleep(2000);
 
 			// This is our main loop run
-			while (lighthouseTracking->RunProcedure(showOnlyDevice)) {
+			while (lighthouseTracking->RunProcedure()) {
 
 				// Windows quit routine - adapt as you need
 				if (_kbhit()) {
