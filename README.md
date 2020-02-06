@@ -23,8 +23,7 @@ $ git clone --recurse-submodules <URL>
 
 ##  How do I use it?
 1. Start up Steam VR
-2. In order to get data from Vive Tracker, go to SteamVR->Devices->Manage Vive Trackers, and set role to camera
-3. Compile and start the example - it launches as a background application
+2. Compile and start the example - it launches as a console application
 
 
 ##  Troubleshooting:
