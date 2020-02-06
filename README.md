@@ -8,8 +8,6 @@ Compiled using Visual Studio 2017.
 
 # Settings
 
-If you supply the parameter "--showonlydeviceid <number>" you can choose to show data/events for a specific device. E.g. "--showonlydeviceid 0" would show only data for the HMD.
-
 If you supply the parameter "--port <number>" you can choose which port to send the OSC data to.
 
 If you supply the parameter "--ip <number>" you can choose which ip address to send the OSC data to.
