@@ -110,7 +110,7 @@ copy /Y "$(TargetPath)" "\\DESKTOP-GH45UK8\Omnifinity\vive_debugger\$(TargetName
     <ClCompile Include="..\oscpack_1_1_0\osc\OscPrintReceivedElements.cpp" />
     <ClCompile Include="..\oscpack_1_1_0\osc\OscReceivedElements.cpp" />
     <ClCompile Include="..\oscpack_1_1_0\osc\OscTypes.cpp" />
-    <ClCompile Include="HTC Lighthouse Tracking Example.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="LighthouseTracking.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

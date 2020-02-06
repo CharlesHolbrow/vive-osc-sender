@@ -35,9 +35,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HTC Lighthouse Tracking Example.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LighthouseTracking.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -61,6 +58,9 @@
     </ClCompile>
     <ClCompile Include="..\oscpack_1_1_0\ip\win32\UdpSocket.cpp">
       <Filter>Source Files\oscpack</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

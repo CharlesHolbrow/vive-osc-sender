@@ -240,7 +240,6 @@ void LighthouseTracking::PrintDevices() {
                 if (!error) {
                     printf_s("\taxis: %d - type: %d (%s) \n", j, enumAxis, vr::VRSystem()->GetControllerAxisTypeNameFromEnum(enumAxis));
                 }
-
             }
         }
 	}
