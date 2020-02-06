@@ -20,7 +20,7 @@ LighthouseTracking::~LighthouseTracking() {
 
 // Constructor
 LighthouseTracking::LighthouseTracking(IpEndpointName ip)
-	: transmitSocket(ip){
+	: transmitSocket(ip) {
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pHMD = vr::VR_Init(&eError, vr::VRApplication_Background);
 	char buf[1024];
@@ -45,7 +45,6 @@ LighthouseTracking::LighthouseTracking(IpEndpointName ip)
 
 /*
 * Loop-listen for events then parses them (e.g. prints the to user)
-* Supply a filterIndex other than -1 to show only info for that device in question. e.g. 0 is always the hmd.
 * Returns true if success or false if openvr has quit
 */
 bool LighthouseTracking::RunProcedure() {
@@ -101,83 +100,77 @@ void LighthouseTracking::ParseTrackingFrame() {
         // Get what type of device it is and work with its data
         vr::ETrackedDeviceClass trackedDeviceClass = vr::VRSystem()->GetTrackedDeviceClass(i);
         switch (trackedDeviceClass) {
-        case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
-            break;
         case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller:
             controllersFound++;
-            // get controller axis
-            if (devicePose->bPoseIsValid) {
-                trigger = controllerState.rAxis[1].x;
-            }
             // For now, I don't care about the role, but I may want it later
             switch (vr::VRSystem()->GetControllerRoleForTrackedDeviceIndex(i)) {
-            case vr::TrackedControllerRole_Invalid:
-                break;
-            case vr::TrackedControllerRole_LeftHand:
-                break;
-            case vr::TrackedControllerRole_RightHand:
-                break;
-            case vr::TrackedControllerRole_Treadmill:
-                break;
+                case vr::TrackedControllerRole_Invalid: break;
+                case vr::TrackedControllerRole_LeftHand: break;
+                case vr::TrackedControllerRole_RightHand: break;
+                case vr::TrackedControllerRole_Treadmill: break;
             }
             break;
 
         case vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker:
             trackersFound++;
             break;
-        case vr::ETrackedDeviceClass::TrackedDeviceClass_TrackingReference:
-            break;
-        case vr::ETrackedDeviceClass::TrackedDeviceClass_DisplayRedirect:
-            break;
-        case vr::ETrackedDeviceClass::TrackedDeviceClass_Invalid:
-            break;
-        }
 
-        // decide what do do with the pose
+        case vr::ETrackedDeviceClass::TrackedDeviceClass_TrackingReference:; // Lighthouse
+        case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
+        case vr::ETrackedDeviceClass::TrackedDeviceClass_DisplayRedirect:
+        case vr::ETrackedDeviceClass::TrackedDeviceClass_Invalid:
+        case vr::ETrackedDeviceClass::TrackedDeviceClass_Max:
+            break;
+        } // switch vr::ETrackedDeviceClass
+
+        // If the pose is invalid, or the Tracking result not okay, don't send
+        if (!devicePose->bPoseIsValid || devicePose->eTrackingResult != vr::ETrackingResult::TrackingResult_Running_OK) continue;
+
         {
-            if (!devicePose->bPoseIsValid || devicePose->eTrackingResult != vr::ETrackingResult::TrackingResult_Running_OK) continue;
             vr::HmdVector3_t position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
             vr::HmdQuaternion_t quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);
-
             vr::HmdVector3_t vVel = devicePose->vVelocity;
             vr::HmdVector3_t vAngVel = devicePose->vAngularVelocity;
 
+            bool send = false;
+            char type = 0;
             char oscAddress[1024];
             switch (trackedDeviceClass) {
             case vr::TrackedDeviceClass_Controller:
                 sprintf_s(oscAddress, sizeof(oscAddress), "/controller/%d", controllersFound);
+                trigger = controllerState.rAxis[1].x; // get controller axis
+                type = 'C';
+                send = true;
                 break;
             case vr::TrackedDeviceClass_GenericTracker:
                 sprintf_s(oscAddress, sizeof(oscAddress), "/tracker/%d", trackersFound);
+                type = 'T';
+                send = true;
                 break;
-            default:
-                sprintf_s(oscAddress, sizeof(oscAddress), "/other");
+            case vr::TrackedDeviceClass_TrackingReference:
+            case vr::TrackedDeviceClass_DisplayRedirect:
+            case vr::TrackedDeviceClass_HMD:
+            case vr::TrackedDeviceClass_Invalid:
+            case vr::TrackedDeviceClass_Max:
                 break;
             }
 
             // Create and send OSC message
-            char oscBuffer[2048];
-            osc::OutboundPacketStream pStream(oscBuffer, 2048);
-            pStream << osc::BeginMessage(oscAddress);
-            pStream << position.v[0] << position.v[1] << position.v[2]
-                << static_cast<float>(quaternion.w) << static_cast<float>(quaternion.x)
-                << static_cast<float>(quaternion.y) << static_cast<float>(quaternion.z);
+            if (send) {
+                char oscBuffer[2048];
+                osc::OutboundPacketStream pStream(oscBuffer, 2048);
+                pStream
+                    << osc::BeginMessage(oscAddress)
+                    << position.v[0] << position.v[1] << position.v[2]
+                    << static_cast<float>(quaternion.w) << static_cast<float>(quaternion.x)
+                    << static_cast<float>(quaternion.y) << static_cast<float>(quaternion.z);
 
-            if (trackedDeviceClass == vr::TrackedDeviceClass_Controller)
-                pStream << trigger;
+                if (trackedDeviceClass == vr::TrackedDeviceClass_Controller)
+                    pStream << trigger;
 
-            pStream << osc::EndMessage;
-
-            transmitSocket.Send(pStream.Data(), pStream.Size());
-
-            // Print stuff
-            char type = 'T';
-            switch (trackedDeviceClass) {
-            case vr::TrackedDeviceClass_Controller:
-                type = 'C';
-            case vr::TrackedDeviceClass_GenericTracker:
+                pStream << osc::EndMessage;
+                transmitSocket.Send(pStream.Data(), pStream.Size());
                 printf_s("%c(% .2f,  % .2f, % .2f) q(% .2f, % .2f, % .2f, % .2f) - ", type, position.v[0], position.v[1], position.v[2], quaternion.w, quaternion.x, quaternion.y, quaternion.z);
-                break;
             }
         }
     }
