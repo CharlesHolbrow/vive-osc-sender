@@ -7,7 +7,6 @@
 #include "stdafx.h"
 #include "LighthouseTracking.h"
 #include <filesystem>
-using namespace std::experimental::filesystem::v1;
 
 // Destructor
 LighthouseTracking::~LighthouseTracking() {
